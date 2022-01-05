@@ -1,0 +1,4 @@
+- 👋 Hi, I’m @r-karunathilake
+- 👀 I’m interested in digital signal processing and integrated photonic design. 
+- 🌱 I’m currently working developing integrated photonic based LiDAR solutions. 
+- 📫 You can reach me at karunath@ualberta.ca
