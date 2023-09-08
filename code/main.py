@@ -1,20 +1,19 @@
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QLabel,
-                             QGridLayout, QWidget, QTabWidget,
-                             QVBoxLayout, QHBoxLayout, QToolBar,
-                             QStatusBar, QCheckBox, QPushButton,
-                             QDialog, QDialogButtonBox, QFrame,
-                             QLineEdit, QFormLayout, QComboBox,
-                             QDateEdit, QTextEdit, QTableWidget,
-                             QDockWidget, QDoubleSpinBox, QSpinBox,
-                             QGroupBox, QTableWidgetItem, QHeaderView,
-                            QSizePolicy, QAbstractItemView, QMessageBox)
+                             QWidget, QVBoxLayout, QHBoxLayout, 
+                             QPushButton, QFrame,QLineEdit,
+                             QFormLayout, QComboBox, QDateEdit,
+                             QTextEdit, QTableWidget, QDoubleSpinBox, 
+                             QSpinBox,QGroupBox, QTableWidgetItem,
+                             QHeaderView, QSizePolicy, QAbstractItemView,
+                             QMessageBox, QSpacerItem, QLayout)
 
-from PyQt6.QtGui import QIcon, QPalette, QColor, QAction, QKeySequence
 from PyQt6.QtCore import QSize, Qt, QRect, QDate
-from pathlib import Path
-from datetime import date 
+from PyQt6.QtGui import QIcon, QPalette, QColor
 from decimal import Decimal
+from datetime import date 
+from pathlib import Path
 from typing import Union
+
 import sys 
 
 """This file contains the necessary code to build the GUI and functionality to 
@@ -25,15 +24,6 @@ DEFAULT_WINDOW_SIZE = QSize(500, 500) # (width, height) in pixels
 DRAW_FRAME_BORDER = False 
 PROVINCE_ABRV_LIST = sorted(["NL", "PE", "NS", "NB", "QC", "ON", "MB", "SK", "AB", "BC", "YT", "NT", "NU"])
 TABLE_HEADERS = ["Quantity", "Item Description", "Unit Price", "Line Total"]
-# Custom widget by subclassing QWidget
-class Color(QWidget):
-    def __init__(self, color: str):
-        super().__init__()
-
-        self.setAutoFillBackground(True) # Automatically set background color 
-        palette = self.palette() # Global desktop palette by default 
-        palette.setColor(QPalette.ColorRole.Window, QColor(color))
-        self.setPalette(palette)
 
 class QHLine(QFrame):
     def __init__(self):
@@ -75,43 +65,129 @@ class MainWindow(QMainWindow):
         self.header_lo = QHBoxLayout()
         self.create_header()
         # Add header layout to the main layout 
-        self.main_lo.addLayout(self.header_lo) 
-        self.main_lo.addWidget(QHLine())
+        self.main_lo.addLayout(self.header_lo)
+        self.main_lo.addWidget(QHLine()) 
 
         # Company detail section layout 
-        self.company_lo = QHBoxLayout()
         self.create_company_header()
-        # Add company layout to the main layout 
-        self.main_lo.addLayout(self.company_lo)
         self.main_lo.addWidget(QHLine())
 
         # Billing detail section layout 
-        self.billing_lo = QHBoxLayout() # Job description and location go here as well
         self.create_billing_header() 
-        # Add billing layout to the main layout 
-        self.main_lo.addLayout(self.billing_lo)
         self.main_lo.addWidget(QHLine()) 
 
-        # Add self.table for invoice items
-        self.table_lo = QHBoxLayout()
+        # Add table for invoice items
         self.create_item_table()
-        self.main_lo.addLayout(self.table_lo)
         self.main_lo.addWidget(QHLine()) 
 
-        # Add the footer button to save, reset and generate invoice
-
+        # Create footer buttons 
+        self.create_footer_btns()
 
         self.widget = QWidget()
         self.widget.setLayout(self.main_lo)
         self.setCentralWidget(self.widget)
 
+    def create_footer_btns(self) -> None:
+        """ This function will create the GUI footer action
+            buttons. 
+        """
+        # Add the footer button to save, reset and generate invoice
+        f_group = QGroupBox("Actions")
+        f_lo = QHBoxLayout(f_group)
+        
+        # Generate invoice button 
+        btn_gen = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/blue-document-pdf-text.png")), 'Generate Invoice')
+        btn_gen.clicked.connect(self.gen_invoice) # type: ignore
+        f_lo.addWidget(btn_gen)
+
+        # Generate new invoice button
+        btn_new = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/blue-document--plus.png")), 'New Invoice')
+        btn_new.clicked.connect(self.new_invoice) # type: ignore
+        f_lo.addWidget(btn_new)
+
+        # Reset all fields of the invoice generator 
+        btn_reset= QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/arrow-circle.png")), 'Reset')
+        btn_reset.clicked.connect(self.reset_invoice_gen) # type: ignore
+        f_lo.addWidget(btn_reset)
+
+        self.main_lo.addWidget(f_group)
+
+    def new_invoice(self, override_conf: bool) -> None:
+        """ This function will reset 'Billing Information', 
+            'Invoiced Items' and 'Add New Items' fields of the 
+            invoice generator GUI. 
+        Args:
+            override_conf (bool): if True, no confirmation dialog will be presented. 
+        """
+        if not override_conf:
+            reply = QMessageBox.question(self, 'New Invoice Confirmation', 'Are you sure you want to create a new invoice?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.Yes:
+                # Clear new item fields
+                self.clear_item_form()
+                # Clear the table 
+                self.clear_table(True)
+                # Clear billing information
+                self.clear_fields(self.billing_lo)
+        else:
+            # Clear new item fields
+            self.clear_item_form()
+            # Clear the table 
+            self.clear_table(True)
+                # Clear billing information
+            self.clear_fields(self.billing_lo)
+
+
+    def clear_fields(self, layout: QLayout) -> None:
+        """ This function will clear the fields from
+            the given layout inside the invoice generator GUI.
+
+        Args:
+            layout (QLayout): the layout to be cleared. 
+        """
+        for idx in range(layout.count()):
+            frame = layout.itemAt(idx).widget()
+            if not frame:
+                continue
+            for widget in frame.findChildren(QWidget):
+                if isinstance(widget, QLineEdit) or isinstance(widget, QComboBox) or isinstance(widget, QTextEdit):
+                    widget.clear()
+                elif isinstance(widget, QDateEdit):
+                    widget.setDate(QDate(*map(int,str(date.today()).split("-"))))
+
+    def reset_invoice_gen(self) -> None:
+        """ This function will reset all fields of the invoice 
+            generator to default. 
+        """
+        reply = QMessageBox.question(self, 'Reset Invoice Confirmatoin', 'Are you sure you want to reset all field of the invoice?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            # Clear billing and invoiced items 
+            self.new_invoice(True)
+
+            # Clear the company information 
+            self.clear_fields(self.comp_lo)
+
+            # TODO: Clear the logo 
+
+    def gen_invoice(self) -> None:
+        """
+        
+        """
+        # TODO: Open a dialog box and ask the user where to save the PDF and what it should be named
+        # TODO: Call the PDF generation class
+        # TODO: Once the PDF is generated, automatically open the file explorer where is was saved and open the PDF (on the system default viewer)
+        pass
+
     def create_item_table(self) -> None:
         """ This function creates the portion of the GUI for adding 
             items to the invoice. 
         """
+        # Table of the left side and "Add Item" form on the right side 
+        self.table_lo = QHBoxLayout()
+
         # Left side 
         l_group = QGroupBox("Invoiced Items")
-        l_lo = QVBoxLayout()
+        # For a table and row of buttons under the table on the left side 
+        l_lo = QVBoxLayout() 
         l_group.setLayout(l_lo)
 
         self.table = QTableWidget(l_group)
@@ -129,10 +205,22 @@ class MainWindow(QMainWindow):
 
         l_lo.addWidget(self.table)
 
-        # Add item delete button 
+        table_btn_group = QWidget() 
+        table_btn_lo = QHBoxLayout()
+        table_btn_lo.setContentsMargins(0, 0, 0, 0)
+        table_btn_group.setLayout(table_btn_lo)
+
+        # Add table item delete button 
         btn_del = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table-delete-row.png")), 'Delete Item')
         btn_del.clicked.connect(self.delete_item) # type: ignore
-        l_lo.addWidget(btn_del)
+        table_btn_lo.addWidget(btn_del)
+        
+        # Add clear table button 
+        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table--minus.png")), 'Clear Table')
+        btn_clear.clicked.connect(self.clear_table) # type: ignore
+        table_btn_lo.addWidget(btn_clear)
+
+        l_lo.addWidget(table_btn_group)
         self.table_lo.addWidget(l_group)
 
         # Right side
@@ -153,7 +241,7 @@ class MainWindow(QMainWindow):
 
         self.unit_price = QDoubleSpinBox()
         self.unit_price.setDecimals(2)
-        self.unit_price.setMinimum(0)
+        self.unit_price.setMinimum(-100000)
         self.unit_price.setMaximum(100000)
 
         r_lo.addRow("Quantity:", self.quantity)
@@ -175,6 +263,23 @@ class MainWindow(QMainWindow):
         btn_lo.addWidget(btn_clear)
         r_lo.setWidget(3, QFormLayout.ItemRole.FieldRole, btn_widget)
 
+        self.main_lo.addLayout(self.table_lo)
+
+    def clear_table(self, override_conf:bool) -> None:
+        """ This function will clear the whole invoice table.
+
+        Args:
+            override_conf (bool): if True, no confirmation dialog will be presented. 
+        """
+        if not override_conf:
+            reply = QMessageBox.question(self, "Clear Table Confirmation",
+                                        "Are you sure you want to clear the whole table?",
+                                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.Yes:
+                self.table.setRowCount(0)
+        else:
+            self.table.setRowCount(0)
+
     def delete_item(self) -> Union[None, QMessageBox]:
         """ This function deletes the selected items from 
             the invoice table.
@@ -186,10 +291,10 @@ class MainWindow(QMainWindow):
 
         # Sort the row indices in decending order (avoids index shifting during deletion)
         selected_rows = sorted(list(selected_rows), reverse=True)
-        if len(selected_rows) < 0:
+        if len(selected_rows) == 0:
             return QMessageBox.warning(self, 'Warning','Please select a record to delete') # type: ignore
 
-        button = QMessageBox.question(self, 'Confirmation', 'Are you sure that you want to delete the selected row?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        button = QMessageBox.question(self, 'Clear Row(s) Confirmation', 'Are you sure that you want to delete the selected row?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if button == QMessageBox.StandardButton.Yes:
             for row in selected_rows:
                 self.table.removeRow(row) # type: ignore
@@ -236,6 +341,10 @@ class MainWindow(QMainWindow):
         """ This function creates the GUI elements for inserting 
             billing information.        
         """
+        billing_group = QGroupBox("Billing Information")
+        self.billing_lo = QHBoxLayout()
+        billing_group.setLayout(self.billing_lo)
+        
         # Create left, middle, and right frames 
         left_frame = BoxFrame()
         mid_frame = BoxFrame()  
@@ -250,11 +359,15 @@ class MainWindow(QMainWindow):
         self.billing_lo.addWidget(mid_frame)
         self.billing_lo.addWidget(right_frame)
 
+        # Add billing layout to the main layout 
+        self.main_lo.addWidget(billing_group)
+
     def _build_billing_rframe(self, frame: QFrame) -> None:
-        """_summary_
+        """ This function creates the GUI elements for inserting 
+            the billing name and address. 
 
         Args:
-            frame (QFrame): _description_
+            frame (QFrame): parent frame for the 'QFormLayout' 
         """
         r_lo = QFormLayout(frame)
         r_lo.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -299,6 +412,8 @@ class MainWindow(QMainWindow):
         mid_lo.setFormAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.job_desc = QTextEdit()
+        self.job_desc.setSizePolicy(QSizePolicy.Policy.Fixed, 
+                                 QSizePolicy.Policy.Expanding)
         self.job_desc.setPlaceholderText("Enter Job Details")
         mid_lo.setWidget(0, QFormLayout.ItemRole.LabelRole, QLabel("Job Description:"))
         mid_lo.setWidget(0, QFormLayout.ItemRole.FieldRole, self.job_desc)
@@ -373,6 +488,10 @@ class MainWindow(QMainWindow):
         """ This function creates the GUI elements for inserting 
             company information.        
         """
+        comp_group = QGroupBox("Service Provider Information")
+        self.comp_lo = QHBoxLayout()
+        comp_group.setLayout(self.comp_lo)
+
         # Create left and right frames 
         left_frame = BoxFrame() 
         right_frame = BoxFrame()
@@ -380,8 +499,16 @@ class MainWindow(QMainWindow):
         self._build_company_rframe(right_frame)
         self._build_company_lframe(left_frame)
 
-        self.company_lo.addWidget(left_frame)
-        self.company_lo.addWidget(right_frame)
+        self.comp_lo.addWidget(left_frame)
+
+        # Add a spacer between the left and right widgets 
+        spacer = QSpacerItem(10, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.comp_lo.addItem(spacer)
+
+        self.comp_lo.addWidget(right_frame)
+
+        # Add company layout to the main layout 
+        self.main_lo.addWidget(comp_group)
 
     def _build_company_rframe(self, frame: QFrame) -> None:
         """ This function creates the GUI elements for the right hand
