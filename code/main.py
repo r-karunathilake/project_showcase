@@ -4,13 +4,17 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QLabel,
                              QStatusBar, QCheckBox, QPushButton,
                              QDialog, QDialogButtonBox, QFrame,
                              QLineEdit, QFormLayout, QComboBox,
-                             QDateEdit, QTextEdit)
+                             QDateEdit, QTextEdit, QTableWidget,
+                             QDockWidget, QDoubleSpinBox, QSpinBox,
+                             QGroupBox, QTableWidgetItem, QHeaderView,
+                            QSizePolicy, QAbstractItemView, QMessageBox)
 
-from PyQt6.QtGui import QIcon, QPalette, QColor, QAction, QKeySequence 
+from PyQt6.QtGui import QIcon, QPalette, QColor, QAction, QKeySequence
 from PyQt6.QtCore import QSize, Qt, QRect, QDate
 from pathlib import Path
 from datetime import date 
-
+from decimal import Decimal
+from typing import Union
 import sys 
 
 """This file contains the necessary code to build the GUI and functionality to 
@@ -18,9 +22,9 @@ extract and parse user input data for the invoice generator"""
 
 APP_NAME = "Invoice Generator"
 DEFAULT_WINDOW_SIZE = QSize(500, 500) # (width, height) in pixels 
-DRAW_FRAME_BORDER = True 
+DRAW_FRAME_BORDER = False 
 PROVINCE_ABRV_LIST = sorted(["NL", "PE", "NS", "NB", "QC", "ON", "MB", "SK", "AB", "BC", "YT", "NT", "NU"])
-
+TABLE_HEADERS = ["Quantity", "Item Description", "Unit Price", "Line Total"]
 # Custom widget by subclassing QWidget
 class Color(QWidget):
     def __init__(self, color: str):
@@ -77,7 +81,6 @@ class MainWindow(QMainWindow):
         # Company detail section layout 
         self.company_lo = QHBoxLayout()
         self.create_company_header()
-
         # Add company layout to the main layout 
         self.main_lo.addLayout(self.company_lo)
         self.main_lo.addWidget(QHLine())
@@ -85,20 +88,136 @@ class MainWindow(QMainWindow):
         # Billing detail section layout 
         self.billing_lo = QHBoxLayout() # Job description and location go here as well
         self.create_billing_header() 
-
         # Add billing layout to the main layout 
         self.main_lo.addLayout(self.billing_lo)
         self.main_lo.addWidget(QHLine()) 
 
+        # Add self.table for invoice items
+        self.table_lo = QHBoxLayout()
+        self.create_item_table()
+        self.main_lo.addLayout(self.table_lo)
+        self.main_lo.addWidget(QHLine()) 
 
-
-        # Add table of invoice items
-        # TODO: call function to setup the table here 
+        # Add the footer button to save, reset and generate invoice
 
 
         self.widget = QWidget()
         self.widget.setLayout(self.main_lo)
         self.setCentralWidget(self.widget)
+
+    def create_item_table(self) -> None:
+        """ This function creates the portion of the GUI for adding 
+            items to the invoice. 
+        """
+        # Left side 
+        l_group = QGroupBox("Invoiced Items")
+        l_lo = QVBoxLayout()
+        l_group.setLayout(l_lo)
+
+        self.table = QTableWidget(l_group)
+        # Configure the self.table 
+        self.table.setColumnCount(len(TABLE_HEADERS)) # Number of columns
+        self.table.setHorizontalHeaderLabels(TABLE_HEADERS) # Column labels
+        self.table.setAlternatingRowColors(True)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        header = self.table.horizontalHeader()       
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
+
+        l_lo.addWidget(self.table)
+
+        # Add item delete button 
+        btn_del = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table-delete-row.png")), 'Delete Item')
+        btn_del.clicked.connect(self.delete_item) # type: ignore
+        l_lo.addWidget(btn_del)
+        self.table_lo.addWidget(l_group)
+
+        # Right side
+        r_group = QGroupBox("Add New Items")
+        r_lo = QFormLayout()
+        r_lo.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        r_group.setLayout(r_lo)
+
+        self.table_lo.addWidget(r_group)
+
+        self.quantity = QSpinBox()
+        self.quantity.setMinimum(1)
+        self.quantity.setMaximum(1000)
+        self.item_desc = QTextEdit()
+        self.item_desc.setPlaceholderText("Enter Item Details")
+        self.item_desc.setSizePolicy(QSizePolicy.Policy.Fixed, 
+                                 QSizePolicy.Policy.Expanding)
+
+        self.unit_price = QDoubleSpinBox()
+        self.unit_price.setDecimals(2)
+        self.unit_price.setMinimum(0)
+        self.unit_price.setMaximum(100000)
+
+        r_lo.addRow("Quantity:", self.quantity)
+        r_lo.addRow("Item Description:", self.item_desc)
+        r_lo.addRow("Unit Price ($):", self.unit_price)
+
+        btn_widget = QWidget() 
+        btn_lo = QHBoxLayout()
+        btn_lo.setContentsMargins(0, 0, 0, 0)
+        btn_widget.setLayout(btn_lo)
+
+        btn_add = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/plus-button.png")), 'Add')
+        btn_add.clicked.connect(self.add_item)
+
+        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/bin-metal.png")), 'Clear')
+        btn_clear.clicked.connect(self.clear_item_form)
+        
+        btn_lo.addWidget(btn_add)
+        btn_lo.addWidget(btn_clear)
+        r_lo.setWidget(3, QFormLayout.ItemRole.FieldRole, btn_widget)
+
+    def delete_item(self) -> Union[None, QMessageBox]:
+        """ This function deletes the selected items from 
+            the invoice table.
+        """
+        # Figure out which rows are selected 
+        selected_rows = set()
+        for item in self.table.selectedItems():
+            selected_rows.add(item.row())
+
+        # Sort the row indices in decending order (avoids index shifting during deletion)
+        selected_rows = sorted(list(selected_rows), reverse=True)
+        if len(selected_rows) < 0:
+            return QMessageBox.warning(self, 'Warning','Please select a record to delete') # type: ignore
+
+        button = QMessageBox.question(self, 'Confirmation', 'Are you sure that you want to delete the selected row?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if button == QMessageBox.StandardButton.Yes:
+            for row in selected_rows:
+                self.table.removeRow(row) # type: ignore
+
+    def add_item(self) -> None:
+        """ This function adds a new item to the table from
+            'Add New Item' form.
+        """ 
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        self.table.setItem(row, 1, QTableWidgetItem(self.item_desc.toPlainText()))
+        self.table.setItem(row, 2, QTableWidgetItem(self.unit_price.text()))
+
+        # Calculate the line total 
+        price = Decimal(self.unit_price.text())
+        quantity = int(self.quantity.text().strip())
+
+        line_total = price * quantity
+        self.table.setItem(row, 0, QTableWidgetItem(str(quantity)))
+        self.table.setItem(row, 3, QTableWidgetItem(str(line_total)))
+
+        self.clear_item_form()
+
+    def clear_item_form(self) -> None:
+        """ This function clears the 'Add New Item' form.""" 
+        self.quantity.setValue(1)
+        self.unit_price.setValue(0)
+        self.item_desc.clear()
 
     def create_header(self) -> None:
         """ This function creates the header GUI for the billing invoice 
