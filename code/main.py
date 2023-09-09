@@ -5,15 +5,18 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QLabel,
                              QTextEdit, QTableWidget, QDoubleSpinBox, 
                              QSpinBox,QGroupBox, QTableWidgetItem,
                              QHeaderView, QSizePolicy, QAbstractItemView,
-                             QMessageBox, QSpacerItem, QLayout)
+                             QMessageBox, QSpacerItem, QLayout,
+                             QFileDialog)
 
 from PyQt6.QtCore import QSize, Qt, QRect, QDate
-from PyQt6.QtGui import QIcon, QPalette, QColor
+from PyQt6.QtGui import QIcon, QPalette, QColor, QPixmap, QFont 
 from decimal import Decimal
 from datetime import date 
 from pathlib import Path
 from typing import Union
 
+import shutil
+import json
 import sys 
 
 """This file contains the necessary code to build the GUI and functionality to 
@@ -24,6 +27,47 @@ DEFAULT_WINDOW_SIZE = QSize(500, 500) # (width, height) in pixels
 DRAW_FRAME_BORDER = False 
 PROVINCE_ABRV_LIST = sorted(["NL", "PE", "NS", "NB", "QC", "ON", "MB", "SK", "AB", "BC", "YT", "NT", "NU"])
 TABLE_HEADERS = ["Quantity", "Item Description", "Unit Price", "Line Total"]
+CONFIG_FILE_PATH = Path.cwd() / "config.json"
+LOGO_FILE_PATH = list(Path.cwd().glob("logo.*"))
+
+# Read the JSON configuration file if it exists 
+JSON_CONFIG = None
+if CONFIG_FILE_PATH.exists():
+    # Read the config file
+    with open(CONFIG_FILE_PATH, "r") as f:
+        JSON_CONFIG = json.load(f)
+
+
+# Define a modern CSS stylesheet
+CSS_STYLE = """
+    * {
+        font-family: Bahnschrift Light SemiCondensed;
+        font-size: 14px;
+        font-weight: normal;
+    }
+
+    QMainWindow {
+        background-color: #ffffff;
+    }
+
+    QPushButton {
+        background-color: #3498db;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+    QPushButton:hover {
+        background-color: #2980b9;
+    }
+
+    QLabel {
+        font-size: 16px;
+        color: #333333;
+    }
+"""
+
 
 class QHLine(QFrame):
     def __init__(self):
@@ -54,18 +98,17 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
     
         self.setWindowTitle(APP_NAME) # Name of the GUI window
-        self.setWindowIcon(QIcon(str(Path.cwd() / "resources/wolf.png"))) # Add window icon 
+        self.setWindowIcon(QIcon(str(Path.cwd() / "resources/wolf.png"))) # Add window icon
+        # Apply the modern stylesheet to the entire GUI
+        self.setStyleSheet(CSS_STYLE) 
 
         # Main window layout 
         self.main_lo = QVBoxLayout()
         self.main_lo.setContentsMargins(10, 10, 10, 10)
         self.main_lo.setSpacing(10)
 
-        # Header layout 
-        self.header_lo = QHBoxLayout()
+        # Header layout  
         self.create_header()
-        # Add header layout to the main layout 
-        self.main_lo.addLayout(self.header_lo)
         self.main_lo.addWidget(QHLine()) 
 
         # Company detail section layout 
@@ -149,10 +192,41 @@ class MainWindow(QMainWindow):
             if not frame:
                 continue
             for widget in frame.findChildren(QWidget):
-                if isinstance(widget, QLineEdit) or isinstance(widget, QComboBox) or isinstance(widget, QTextEdit):
+                if isinstance(widget, QLineEdit) or isinstance(widget, QTextEdit):
                     widget.clear()
                 elif isinstance(widget, QDateEdit):
                     widget.setDate(QDate(*map(int,str(date.today()).split("-"))))
+                elif isinstance(widget, QComboBox):
+                    widget.setCurrentIndex(-1)
+    
+    def save_fields(self, layout: QLayout) -> None: 
+        """ This function will parse through all the fields 
+        of 'Service Provider Information' section and save it 
+        to a config.JSON file. 
+
+        Args:
+            layout (QLayout): the main layout for the
+                              'Service Provider Information' section
+        """
+        config_dict = {}
+        for idx in range(layout.count()):
+            frame = layout.itemAt(idx).widget()
+            if not frame:
+                continue
+            for widget in frame.findChildren((QLineEdit, QComboBox)):
+                if isinstance(widget, QLabel) or isinstance(widget, QDateEdit):
+                    continue
+
+                placeholder_txt = widget.placeholderText() 
+                if not isinstance(widget, QComboBox):
+                        value = widget.text().strip()
+                else:
+                        value = widget.currentIndex()
+                config_dict[placeholder_txt] = value
+
+        # Save the 'config_dict' to config.JSON file
+        with open(CONFIG_FILE_PATH, "w") as f:
+            json.dump(config_dict, f)
 
     def reset_invoice_gen(self) -> None:
         """ This function will reset all fields of the invoice 
@@ -166,12 +240,26 @@ class MainWindow(QMainWindow):
             # Clear the company information 
             self.clear_fields(self.comp_lo)
 
-            # TODO: Clear the logo 
+            # Delete the invoice generator config.JSON
+            CONFIG_FILE_PATH.unlink(True)
+
+            # Delete logo file and clear it from GUI
+            try:
+                logo_file = list(Path.cwd().glob("logo.*"))[0]
+                logo_file.unlink()
+            except IndexError as e:
+                # A logo was never uploaded
+                pass
+            
+            self.image_lbl.clear()          
 
     def gen_invoice(self) -> None:
         """
         
         """
+        # Save the company information to config.JSON 
+        self.save_fields(self.comp_lo)
+
         # TODO: Open a dialog box and ask the user where to save the PDF and what it should be named
         # TODO: Call the PDF generation class
         # TODO: Once the PDF is generated, automatically open the file explorer where is was saved and open the PDF (on the system default viewer)
@@ -328,14 +416,67 @@ class MainWindow(QMainWindow):
         """ This function creates the header GUI for the billing invoice 
             generator.
         """
+        header_group = QGroupBox("Invoice Header")
+        header_lo = QHBoxLayout()
+        header_group.setLayout(header_lo)
+        
+        l_window = QWidget()
+        l_lo = QHBoxLayout()
+        l_lo.setContentsMargins(0,0,0,0)
+        l_window.setLayout(l_lo)
+
         import_logo_btn = QPushButton("Import Logo")
-        # TODO: Link the import logo to a pop-up dialog for file system searching
+        import_logo_btn.clicked.connect(self._import_logo)
 
         # "INVOICE" label
         invoice_label = QLabel(text="INVOICE")
+
+        # Image label 
+        self.image_lbl = QLabel() # Empty placeholder to put the image 
+        self.image_lbl.setFixedSize(100, 100)
+        self.image_lbl.setSizePolicy(QSizePolicy.Policy.MinimumExpanding,
+                                     QSizePolicy.Policy.MinimumExpanding) 
         
-        self.header_lo.addWidget(import_logo_btn, alignment=Qt.AlignmentFlag.AlignLeft)
-        self.header_lo.addWidget(invoice_label, alignment=Qt.AlignmentFlag.AlignRight)
+        try:
+            self._add_logo_image(LOGO_FILE_PATH[0])
+        except IndexError as e:
+            # A logo file does not exist 
+            pass
+
+        # Add all left widgets  
+        l_lo.addWidget(self.image_lbl, alignment=Qt.AlignmentFlag.AlignLeft)
+        l_lo.addWidget(import_logo_btn, alignment=Qt.AlignmentFlag.AlignRight)
+
+        # Add all widgets to main layout of header
+        header_lo.addWidget(l_window, alignment=Qt.AlignmentFlag.AlignLeft)
+        header_lo.addWidget(invoice_label, alignment=Qt.AlignmentFlag.AlignRight)
+        
+        # Add header group to the main layout 
+        self.main_lo.addWidget(header_group)
+
+    def _import_logo(self) -> None:
+        """ This function will import the logo image into the invoice 
+            generation GUI.
+        """
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select Logo Image", "", "Image Files (*.png *.jpg *.jpeg *.bmp *.gif);;All Files (*)", options=QFileDialog.Option.ReadOnly)
+    
+        if file_name:
+            file_name = Path(file_name)
+            # Save the logo file 
+            shutil.copyfile(file_name, Path.cwd() / ("logo" + file_name.suffix))
+            self._add_logo_image(file_name)
+
+    def _add_logo_image(self, logo_file: Path) -> None:
+        """ This function add the image from 'logo_file' to the GUI 
+            header. 
+
+        Args:
+            logo_file (Path): Path object of the image file to be added to GUI.
+        """
+        pixmap = QPixmap(str(logo_file))
+        self.image_lbl.setPixmap(pixmap.scaled(self.image_lbl.size(),
+                                            Qt.AspectRatioMode.KeepAspectRatio,
+                                            Qt.TransformationMode.SmoothTransformation))
 
     def create_billing_header(self) -> None:
         """ This function creates the GUI elements for inserting 
@@ -522,6 +663,7 @@ class MainWindow(QMainWindow):
 
         # Line #1
         self.invoice_num = QLineEdit()
+        self.invoice_num.setPlaceholderText("Invoice Number")
         r_lo.setWidget(0, QFormLayout.ItemRole.LabelRole, QLabel("Invoice #:"))
         r_lo.setWidget(0, QFormLayout.ItemRole.FieldRole, self.invoice_num)
 
@@ -535,6 +677,7 @@ class MainWindow(QMainWindow):
 
         # Line #3
         self.gst_num = QLineEdit()
+        self.gst_num.setPlaceholderText("GST Number")
         r_lo.setWidget(2, QFormLayout.ItemRole.LabelRole, QLabel("GST #:"))
         r_lo.setWidget(2, QFormLayout.ItemRole.FieldRole, self.gst_num)
 
@@ -543,8 +686,13 @@ class MainWindow(QMainWindow):
         self.due_date.setCalendarPopup(True)
         # Add today's date 
         self.due_date.setDate(QDate(*map(int,str(date.today()).split("-"))))
-        r_lo.setWidget(3, QFormLayout.ItemRole.LabelRole, QLabel("Invoice Date:"))
+        r_lo.setWidget(3, QFormLayout.ItemRole.LabelRole, QLabel("Due Date:"))
         r_lo.setWidget(3, QFormLayout.ItemRole.FieldRole, self.due_date)
+
+        # Preset all the values if previous configuration data is present
+        if JSON_CONFIG:
+            self.invoice_num.setText(JSON_CONFIG["Invoice Number"])
+            self.gst_num.setText(JSON_CONFIG["GST Number"])
 
     def _build_company_lframe(self, frame: QFrame) -> None:
         """ This function creates the GUI elements for the left hand
@@ -604,6 +752,17 @@ class MainWindow(QMainWindow):
         self.comp_email = QLineEdit()
         self.comp_email.setPlaceholderText("Email")
         l_lo.setWidget(5, QFormLayout.ItemRole.SpanningRole, self.comp_email)
+
+        # Preset all the values if previous configuration data is present
+        if JSON_CONFIG:
+            self.comp_name.setText(JSON_CONFIG["Company Name"])
+            self.comp_first_name.setText(JSON_CONFIG["First Name"])
+            self.comp_last_name.setText(JSON_CONFIG["Last Name"])
+            self.comp_city.setText(JSON_CONFIG["City"])
+            self.comp_prov.setCurrentIndex(JSON_CONFIG["Province"])
+            self.comp_postal_code.setText(JSON_CONFIG["Postal Code"])
+            self.comp_phone.setText(JSON_CONFIG["Phone Number"])
+            self.comp_email.setText(JSON_CONFIG["Email"])
 
 if __name__ == "__main__":
     # TODO: Introduce arg parser here
