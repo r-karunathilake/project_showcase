@@ -9,7 +9,8 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QLabel,
                              QFileDialog)
 
 from PyQt6.QtCore import QSize, Qt, QRect, QDate
-from PyQt6.QtGui import QIcon, QPalette, QColor, QPixmap, QFont 
+from PyQt6.QtGui import QIcon, QPixmap
+from pdf_generator import PDF
 from decimal import Decimal
 from datetime import date 
 from pathlib import Path
@@ -36,7 +37,6 @@ if CONFIG_FILE_PATH.exists():
     # Read the config file
     with open(CONFIG_FILE_PATH, "r") as f:
         JSON_CONFIG = json.load(f)
-
 
 # Define a modern CSS stylesheet
 CSS_STYLE = """
@@ -67,7 +67,6 @@ CSS_STYLE = """
         color: #333333;
     }
 """
-
 
 class QHLine(QFrame):
     def __init__(self):
@@ -140,7 +139,7 @@ class MainWindow(QMainWindow):
         
         # Generate invoice button 
         btn_gen = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/blue-document-pdf-text.png")), 'Generate Invoice')
-        btn_gen.clicked.connect(self.gen_invoice) # type: ignore
+        btn_gen.clicked.connect(self.show_invoice_gen_dialog) # type: ignore
         f_lo.addWidget(btn_gen)
 
         # Generate new invoice button
@@ -199,35 +198,104 @@ class MainWindow(QMainWindow):
                 elif isinstance(widget, QComboBox):
                     widget.setCurrentIndex(-1)
     
-    def save_fields(self, layout: QLayout) -> None: 
+    def _get_comp_fields(self, save=False) -> Union[None, dict]: 
         """ This function will parse through all the fields 
-        of 'Service Provider Information' section and save it 
-        to a config.JSON file. 
-
-        Args:
-            layout (QLayout): the main layout for the
-                              'Service Provider Information' section
+            of 'Service Provider Information' section and save it 
+            to a config.JSON file if 'save' is True. Otherwise, return 
+            the entered values as a dictionary. 
         """
         config_dict = {}
-        for idx in range(layout.count()):
-            frame = layout.itemAt(idx).widget()
+        for idx in range(self.comp_lo.count()):
+            frame = self.comp_lo.itemAt(idx).widget()
             if not frame:
                 continue
-            for widget in frame.findChildren((QLineEdit, QComboBox)):
-                if isinstance(widget, QLabel) or isinstance(widget, QDateEdit):
+
+            form_label = ""
+            for widget in frame.findChildren((QLineEdit, QComboBox, QDateEdit, QLabel)):
+                if isinstance(widget, QLabel): 
+                    form_label = widget.text()
                     continue
 
-                placeholder_txt = widget.placeholderText() 
-                if not isinstance(widget, QComboBox):
-                        value = widget.text().strip()
+                if isinstance(widget, QDateEdit):
+                    config_dict[form_label] = widget.date().toString("yyyy-MM-dd")
+                    continue
+
+                placeholder_txt = widget.placeholderText()
+                if placeholder_txt == "":
+                    continue
+
+                if isinstance(widget, QComboBox):
+                    value = widget.currentText()
                 else:
-                        value = widget.currentIndex()
+                    value = widget.text().strip()
+                
                 config_dict[placeholder_txt] = value
 
-        # Save the 'config_dict' to config.JSON file
-        with open(CONFIG_FILE_PATH, "w") as f:
-            json.dump(config_dict, f)
+        if save:
+            # Save the 'config_dict' to config.JSON file
+            with open(CONFIG_FILE_PATH, "w") as f:
+                json.dump(config_dict, f)
+        else:
+            return config_dict
+        
+    def _get_bill_fields(self) -> dict:
+        """ This function will parse through all the fields 
+            of 'Billing Information' section and return 
+            the entered values as a dictionary. 
 
+        Returns:
+            dict: representing the data entered in the billing information section
+                  with sub-dictionaries keyed to 'Bill To', 'Job Description',
+                  and 'Job Location'.
+        """
+        config_dict = {}
+        for idx in range(self.billing_lo.count()):
+            frame = self.billing_lo.itemAt(idx).widget()
+            if not frame:
+                continue
+
+            form_label = ""
+            for widget in frame.findChildren((QLineEdit, QComboBox, QTextEdit, QLabel)):
+                if isinstance(widget, QLabel): 
+                    form_label = widget.text()
+                    config_dict[form_label] = dict() # Place holder for future information
+                    continue
+
+                placeholder_txt = widget.placeholderText()
+                if placeholder_txt == "":
+                    continue
+
+                if isinstance(widget, QComboBox):
+                    value = widget.currentText()
+                elif isinstance(widget, QTextEdit):
+                    value = widget.toPlainText()
+                else:
+                    value = widget.text().strip()
+                
+                config_dict[form_label][placeholder_txt] = value
+        
+        return config_dict
+    
+    def _get_table_items(self) -> list:
+        """ This function will extract all the items invoiced to the invoice
+            table. 
+
+        Returns:
+            list: list of dictionaries for all items in the invoice table. 
+        """
+        data = []
+        for row in range(self.table.rowCount()):
+            row_data = {}
+            for col in range(self.table.columnCount()):
+                item = self.table.item(row, col)
+                if item is not None:
+                    row_data[self.table.horizontalHeaderItem(col).text()] = item.text()
+                else:
+                    row_data[self.table.horizontalHeaderItem(col).text()] = ""
+            data.append(row_data)
+
+        return data
+    
     def reset_invoice_gen(self) -> None:
         """ This function will reset all fields of the invoice 
             generator to default. 
@@ -251,19 +319,67 @@ class MainWindow(QMainWindow):
                 # A logo was never uploaded
                 pass
             
-            self.image_lbl.clear()          
+            self.image_lbl.clear()        
 
-    def gen_invoice(self) -> None:
+    def collect_data(self) -> dict:
+        """ This function will collect the data entered to various 
+            sections of the GUI into one dictionary data structure.
+
+        Returns:
+            dict: all the information needed to create the invoice as 
+                  dictionary. 
         """
+        data = dict()
+
+        # Get the logo file path if it exists
+        try:
+            data["Logo File"] = LOGO_FILE_PATH[0]
+        except IndexError as e:
+            # A logo file does not exist 
+            pass 
         
+        data["Service Provider Information"] = self._get_comp_fields()
+        data["Billing Information"] = self._get_bill_fields()
+        
+        # Get all the invoiced items 
+        data["Invoiced Items"] = self._get_table_items() 
+
+        # Get the tax percentage 
+        data["Tax"] = self.tax.text().strip()
+
+        return data
+    
+    def gen_PDF(self, save_path: Path) -> None:
+        """ This function will generate the PDF invoice
+            based on the information entered into the GUI fields.
+
+        Args:
+            save_path (Path): path object to the user selected PDF save location.
+        """
+        data = self.collect_data()
+        pdf_generator = PDF(save_path, data, orientation="P",
+                            unit="mm", format="Letter")
+        status = pdf_generator.write_pdf() 
+
+        if status:
+            # Show the PDF save location with status bar in GUI
+            self.statusBar().showMessage(f'PDF saved as {save_path}')
+    
+    def show_invoice_gen_dialog(self) -> None:
+        """ This function will show a pop-up dialog option
+            prompting the user to name and save the PDF invoice to a
+            specific location.
         """
         # Save the company information to config.JSON 
-        self.save_fields(self.comp_lo)
+        self._get_comp_fields(save=True)
 
-        # TODO: Open a dialog box and ask the user where to save the PDF and what it should be named
-        # TODO: Call the PDF generation class
-        # TODO: Once the PDF is generated, automatically open the file explorer where is was saved and open the PDF (on the system default viewer)
-        pass
+        # Allow read-only files and hide name filter details 
+        options = QFileDialog.Option.ReadOnly | QFileDialog.Option.HideNameFilterDetails
+
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save PDF Invoice File", "", "PDF Files (*.pdf);;All Files (*)", options=options)
+
+        if file_path:
+            self.gen_PDF(Path(file_path))
 
     def create_item_table(self) -> None:
         """ This function creates the portion of the GUI for adding 
@@ -393,7 +509,9 @@ class MainWindow(QMainWindow):
         """ 
         row = self.table.rowCount()
         self.table.insertRow(row)
-        self.table.setItem(row, 1, QTableWidgetItem(self.item_desc.toPlainText()))
+        desc_item = QTableWidgetItem(self.item_desc.toPlainText())
+        desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
+        self.table.setItem(row, 1, desc_item)
         self.table.setItem(row, 2, QTableWidgetItem(self.unit_price.text()))
 
         # Calculate the line total 
@@ -689,10 +807,17 @@ class MainWindow(QMainWindow):
         r_lo.setWidget(3, QFormLayout.ItemRole.LabelRole, QLabel("Due Date:"))
         r_lo.setWidget(3, QFormLayout.ItemRole.FieldRole, self.due_date)
 
+        # Line #5 
+        self.tax = QLineEdit()
+        self.tax.setPlaceholderText("Tax")
+        r_lo.setWidget(4, QFormLayout.ItemRole.LabelRole, QLabel("Tax %:"))
+        r_lo.setWidget(4, QFormLayout.ItemRole.FieldRole, self.tax)
+
         # Preset all the values if previous configuration data is present
         if JSON_CONFIG:
             self.invoice_num.setText(JSON_CONFIG["Invoice Number"])
             self.gst_num.setText(JSON_CONFIG["GST Number"])
+            self.tax.setText(JSON_CONFIG["Tax"])
 
     def _build_company_lframe(self, frame: QFrame) -> None:
         """ This function creates the GUI elements for the left hand
@@ -759,7 +884,7 @@ class MainWindow(QMainWindow):
             self.comp_first_name.setText(JSON_CONFIG["First Name"])
             self.comp_last_name.setText(JSON_CONFIG["Last Name"])
             self.comp_city.setText(JSON_CONFIG["City"])
-            self.comp_prov.setCurrentIndex(JSON_CONFIG["Province"])
+            self.comp_prov.setCurrentText(JSON_CONFIG["Province"])
             self.comp_postal_code.setText(JSON_CONFIG["Postal Code"])
             self.comp_phone.setText(JSON_CONFIG["Phone Number"])
             self.comp_email.setText(JSON_CONFIG["Email"])
