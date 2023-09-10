@@ -29,7 +29,6 @@ DRAW_FRAME_BORDER = False
 PROVINCE_ABRV_LIST = sorted(["NL", "PE", "NS", "NB", "QC", "ON", "MB", "SK", "AB", "BC", "YT", "NT", "NU"])
 TABLE_HEADERS = ["Quantity", "Item Description", "Unit Price", "Line Total"]
 CONFIG_FILE_PATH = Path.cwd() / "config.json"
-LOGO_FILE_PATH = list(Path.cwd().glob("logo.*"))
 
 # Read the JSON configuration file if it exists 
 JSON_CONFIG = None
@@ -332,12 +331,8 @@ class MainWindow(QMainWindow):
         data = dict()
 
         # Get the logo file path if it exists
-        try:
-            data["Logo File"] = LOGO_FILE_PATH[0]
-        except IndexError as e:
-            # A logo file does not exist 
-            pass 
-        
+        data["Logo File"] = self.logo
+
         data["Service Provider Information"] = self._get_comp_fields()
         data["Billing Information"] = self._get_bill_fields()
         
@@ -555,11 +550,8 @@ class MainWindow(QMainWindow):
         self.image_lbl.setSizePolicy(QSizePolicy.Policy.MinimumExpanding,
                                      QSizePolicy.Policy.MinimumExpanding) 
         
-        try:
-            self._add_logo_image(LOGO_FILE_PATH[0])
-        except IndexError as e:
-            # A logo file does not exist 
-            pass
+        # If we find a logo file, add it automatically 
+        self._add_logo_image()
 
         # Add all left widgets  
         l_lo.addWidget(self.image_lbl, alignment=Qt.AlignmentFlag.AlignLeft)
@@ -581,17 +573,26 @@ class MainWindow(QMainWindow):
         if file_name:
             file_name = Path(file_name)
             # Save the logo file 
-            shutil.copyfile(file_name, Path.cwd() / ("logo" + file_name.suffix))
-            self._add_logo_image(file_name)
+            cpy_path = Path.cwd() / ("logo" + file_name.suffix)
+            shutil.copyfile(file_name, cpy_path)
+            self._add_logo_image(cpy_path)
 
-    def _add_logo_image(self, logo_file: Path) -> None:
+    def _add_logo_image(self, logo_file: Path=None) -> None:
         """ This function add the image from 'logo_file' to the GUI 
             header. 
 
         Args:
             logo_file (Path): Path object of the image file to be added to GUI.
         """
-        pixmap = QPixmap(str(logo_file))
+        if logo_file is None:
+            try:
+                logo_file = list(Path.cwd().glob("logo.*"))[0] # First found logo file
+            except IndexError as e:
+                # Didn't find a logo file in the current working directory 
+                return 
+
+        self.logo = logo_file
+        pixmap = QPixmap(str(self.logo))
         self.image_lbl.setPixmap(pixmap.scaled(self.image_lbl.size(),
                                             Qt.AspectRatioMode.KeepAspectRatio,
                                             Qt.TransformationMode.SmoothTransformation))
@@ -883,6 +884,7 @@ class MainWindow(QMainWindow):
             self.comp_name.setText(JSON_CONFIG["Company Name"])
             self.comp_first_name.setText(JSON_CONFIG["First Name"])
             self.comp_last_name.setText(JSON_CONFIG["Last Name"])
+            self.comp_street_name.setText(JSON_CONFIG["Street"])
             self.comp_city.setText(JSON_CONFIG["City"])
             self.comp_prov.setCurrentText(JSON_CONFIG["Province"])
             self.comp_postal_code.setText(JSON_CONFIG["Postal Code"])
