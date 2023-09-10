@@ -14,6 +14,25 @@ class PDF(FPDF):
         self.save_path = file_path
         # Data to be written to PDF 
         self.data = invoice_data
+        
+        # Set the document title 
+        self.set_title(TITLE)
+        self.set_author(invoice_data["Service Provider Information"]["Company Name"])
+
+        self.col = 0 # Current column
+        self.y0 = 0 # Ordinate of column start 
+
+    def _set_column(self, col: int) -> None:
+        """ This function will set the current
+            column index based on 'col'.
+
+        Args:
+            col (int): current column number to be set. 
+        """
+        self.col = col
+        x = 10 + col * 65
+        self.set_left_margin(x)
+        self.set_x(x)
 
     def _draw_line(self) -> None:
         """ This function inserts horizontal
@@ -55,11 +74,11 @@ class PDF(FPDF):
             pass
 
         # Calculate the width of the title
-        title_w = self.get_string_width(TITLE) + 6 # +6 for padding for borders
+        title_w = self.get_string_width(self.title) + 6 # +6 for padding for borders
         self.set_x(self.w - (self.r_margin + title_w)) # right align title
 
         # Header title
-        self.cell(title_w, 15, TITLE, border=False, align=Align.R,
+        self.cell(title_w, 15, self.title, border=False, align=Align.R,
                   fill=False, new_x=XPos.RMARGIN)
         # line break
         if logo:
@@ -80,10 +99,12 @@ class PDF(FPDF):
         # Background color
         self.set_fill_color(200, 220, 255)
         # Title
-        self.cell(0, 6, f'{section}', False, align='L', fill=True,
+        self.cell(0, 6, f'{section}', align='L', fill=True,
                   new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         # Line break
         self.ln(5)
+        # Save the ordinate position 
+        self.y0 = self.get_y() 
 
     def _invoice_details(self) -> None:
         """ This function will add the text to the left-margin of the
