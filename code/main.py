@@ -892,7 +892,6 @@ class MainWindow(QMainWindow):
             self.comp_email.setText(JSON_CONFIG["Email"])
 
 if __name__ == "__main__":
-    # TODO: Introduce arg parser here
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show() # Windows are hidden by default 
