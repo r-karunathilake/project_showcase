@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
     
         self.setWindowTitle(APP_NAME) # Name of the GUI window
-        self.setWindowIcon(QIcon(str(Path.cwd() / "resources/wolf.png"))) # Add window icon
+        self.setWindowIcon(QIcon(str(Path.cwd() / "resources/app_logo.png"))) # Add window icon
         # Apply the modern stylesheet to the entire GUI
         self.setStyleSheet(CSS_STYLE) 
 
