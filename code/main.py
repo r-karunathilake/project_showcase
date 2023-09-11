@@ -18,9 +18,10 @@ from typing import Union
 
 import shutil
 import json
-import sys 
+import sys
+import re 
 
-"""This file contains the necessary code to build the GUI and functionality to 
+"""This file contains the necessary code to build the GUI and methodality to 
 extract and parse user input data for the invoice generator"""
 
 APP_NAME = "Invoice Generator"
@@ -39,35 +40,38 @@ if CONFIG_FILE_PATH.exists():
 
 # Define a modern CSS stylesheet
 CSS_STYLE = """
-    * {
-        font-family: Bahnschrift Light SemiCondensed;
-        font-size: 14px;
-        font-weight: normal;
-    }
+                * {
+                    font-family: Bahnschrift Light SemiCondensed;
+                    font-size: 14px;
+                    font-weight: normal;
+                }
 
-    QMainWindow {
-        background-color: #ffffff;
-    }
+                QMainWindow {
+                    background-color: #ffffff;
+                }
 
-    QPushButton {
-        background-color: #3498db;
-        color: #ffffff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-    }
+                QPushButton {
+                    background-color: #3498db;
+                    color: #ffffff;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                }
 
-    QPushButton:hover {
-        background-color: #2980b9;
-    }
+                QPushButton:hover {
+                    background-color: #2980b9;
+                }
 
-    QLabel {
-        font-size: 16px;
-        color: #333333;
-    }
-"""
+                QLabel {
+                    font-size: 16px;
+                    color: #333333;
+                }
+            """
 
 class QHLine(QFrame):
+    """ A child class of the 'QFrame' class from PyQt6 that generates
+        a horizonal line GUI widget.
+    """
     def __init__(self):
         super().__init__()
         self.setFrameShape(QFrame.Shape.HLine)
@@ -75,12 +79,18 @@ class QHLine(QFrame):
         self.setGeometry(QRect())
 
 class QVLine(QFrame):
+    """ A child class of the 'QFrame' class from PyQt6 that generates
+        a vertical line GUI widget.
+    """
     def __init__(self):
         super().__init__()
         self.setFrameShape(QFrame.Shape.VLine)
         self.setFrameShadow(QFrame.Shadow.Sunken)
 
 class BoxFrame(QFrame):
+    """ A child class of the 'QFrame' class from PyQt6 that generates
+        a custom box widget. 
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if DRAW_FRAME_BORDER:
@@ -92,6 +102,9 @@ class BoxFrame(QFrame):
 
 # Customize main window by subclassing QMainWindow 
 class MainWindow(QMainWindow):
+    """ A custom main window for the application that is a child 
+        of PyQt6 'QMainWindow' class. 
+    """
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
     
@@ -106,30 +119,22 @@ class MainWindow(QMainWindow):
         self.main_lo.setSpacing(10)
 
         # Header layout  
-        self.create_header()
-        self.main_lo.addWidget(QHLine()) 
-
+        self._create_header()
         # Company detail section layout 
-        self.create_company_header()
-        self.main_lo.addWidget(QHLine())
-
+        self._create_company_header()
         # Billing detail section layout 
-        self.create_billing_header() 
-        self.main_lo.addWidget(QHLine()) 
-
+        self._create_billing_header() 
         # Add table for invoice items
-        self.create_item_table()
-        self.main_lo.addWidget(QHLine()) 
-
+        self._create_item_table()
         # Create footer buttons 
-        self.create_footer_btns()
+        self._create_footer_btns()
 
         self.widget = QWidget()
         self.widget.setLayout(self.main_lo)
         self.setCentralWidget(self.widget)
 
-    def create_footer_btns(self) -> None:
-        """ This function will create the GUI footer action
+    def _create_footer_btns(self) -> None:
+        """ This method will create the GUI footer action
             buttons. 
         """
         # Add the footer button to save, reset and generate invoice
@@ -138,48 +143,50 @@ class MainWindow(QMainWindow):
         
         # Generate invoice button 
         btn_gen = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/blue-document-pdf-text.png")), 'Generate Invoice')
-        btn_gen.clicked.connect(self.show_invoice_gen_dialog) # type: ignore
+        btn_gen.clicked.connect(self._show_invoice_gen_dialog) # type: ignore
         f_lo.addWidget(btn_gen)
 
         # Generate new invoice button
         btn_new = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/blue-document--plus.png")), 'New Invoice')
-        btn_new.clicked.connect(self.new_invoice) # type: ignore
+        btn_new.clicked.connect(self.__new_invoice) # type: ignore
         f_lo.addWidget(btn_new)
 
         # Reset all fields of the invoice generator 
         btn_reset= QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/arrow-circle.png")), 'Reset')
-        btn_reset.clicked.connect(self.reset_invoice_gen) # type: ignore
+        btn_reset.clicked.connect(self.__reset_invoice_gen) # type: ignore
         f_lo.addWidget(btn_reset)
 
         self.main_lo.addWidget(f_group)
 
-    def new_invoice(self, override_conf: bool) -> None:
-        """ This function will reset 'Billing Information', 
+    def __new_invoice(self, override_conf: bool) -> None:
+        """ This method will reset 'Billing Information', 
             'Invoiced Items' and 'Add New Items' fields of the 
             invoice generator GUI. 
         Args:
             override_conf (bool): if True, no confirmation dialog will be presented. 
         """
         if not override_conf:
-            reply = QMessageBox.question(self, 'New Invoice Confirmation', 'Are you sure you want to create a new invoice?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            reply = QMessageBox.question(self, 'New Invoice Confirmation',
+                                         'Are you sure you want to create a new invoice?',
+                                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             if reply == QMessageBox.StandardButton.Yes:
                 # Clear new item fields
-                self.clear_item_form()
+                self.__clear_item_form()
                 # Clear the table 
-                self.clear_table(True)
+                self._clear_table(True)
                 # Clear billing information
-                self.clear_fields(self.billing_lo)
+                self.__clear_fields(self.billing_lo)
         else:
             # Clear new item fields
-            self.clear_item_form()
+            self.__clear_item_form()
             # Clear the table 
-            self.clear_table(True)
+            self._clear_table(True)
                 # Clear billing information
-            self.clear_fields(self.billing_lo)
+            self.__clear_fields(self.billing_lo)
 
 
-    def clear_fields(self, layout: QLayout) -> None:
-        """ This function will clear the fields from
+    def __clear_fields(self, layout: QLayout) -> None:
+        """ This method will clear the fields from__get_comp_fields
             the given layout inside the invoice generator GUI.
 
         Args:
@@ -197,11 +204,20 @@ class MainWindow(QMainWindow):
                 elif isinstance(widget, QComboBox):
                     widget.setCurrentIndex(-1)
     
-    def _get_comp_fields(self, save=False) -> Union[None, dict]: 
-        """ This function will parse through all the fields 
+    def __get_comp_fields(self, save=False) -> Union[None, dict]: 
+        """ This method will parse through all the fields 
             of 'Service Provider Information' section and save it 
             to a config.JSON file if 'save' is True. Otherwise, return 
             the entered values as a dictionary. 
+
+        Args:
+            save (bool, optional): If True, save the 'Service Provider Information'
+                                   section fiels to a 'config.JSON' file in the current
+                                   working directory. Defaults to False.
+
+        Returns:
+            Union[None, dict]: If 'save' is False, return the fields as a dictonary.
+                               Otherwise, None. 
         """
         config_dict = {}
         for idx in range(self.comp_lo.count()):
@@ -219,14 +235,14 @@ class MainWindow(QMainWindow):
                     config_dict[form_label] = widget.date().toString("yyyy-MM-dd")
                     continue
 
-                placeholder_txt = widget.placeholderText()
+                placeholder_txt = widget.placeholderText() # type: ignore
                 if placeholder_txt == "":
                     continue
 
                 if isinstance(widget, QComboBox):
                     value = widget.currentText()
                 else:
-                    value = widget.text().strip()
+                    value = widget.text().strip() # type: ignore
                 
                 config_dict[placeholder_txt] = value
 
@@ -237,8 +253,8 @@ class MainWindow(QMainWindow):
         else:
             return config_dict
         
-    def _get_bill_fields(self) -> dict:
-        """ This function will parse through all the fields 
+    def __get_bill_fields(self) -> dict:
+        """ This method will parse through all the fields 
             of 'Billing Information' section and return 
             the entered values as a dictionary. 
 
@@ -260,7 +276,7 @@ class MainWindow(QMainWindow):
                     config_dict[form_label] = dict() # Place holder for future information
                     continue
 
-                placeholder_txt = widget.placeholderText()
+                placeholder_txt = widget.placeholderText() # type: ignore
                 if placeholder_txt == "":
                     continue
 
@@ -269,14 +285,14 @@ class MainWindow(QMainWindow):
                 elif isinstance(widget, QTextEdit):
                     value = widget.toPlainText()
                 else:
-                    value = widget.text().strip()
+                    value = widget.text().strip() # type: ignore
                 
                 config_dict[form_label][placeholder_txt] = value
         
         return config_dict
     
-    def _get_table_items(self) -> list:
-        """ This function will extract all the items invoiced to the invoice
+    def __get_table_items(self) -> list:
+        """ This method will extract all the items invoiced to the invoice
             table. 
 
         Returns:
@@ -295,17 +311,19 @@ class MainWindow(QMainWindow):
 
         return data
     
-    def reset_invoice_gen(self) -> None:
-        """ This function will reset all fields of the invoice 
+    def __reset_invoice_gen(self) -> None:
+        """ This method will reset all fields of the invoice 
             generator to default. 
         """
-        reply = QMessageBox.question(self, 'Reset Invoice Confirmatoin', 'Are you sure you want to reset all field of the invoice?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        reply = QMessageBox.question(self, 'Reset Invoice Confirmatoin',
+                                     'Are you sure you want to reset all field of the invoice?',
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
             # Clear billing and invoiced items 
-            self.new_invoice(True)
+            self.__new_invoice(True)
 
             # Clear the company information 
-            self.clear_fields(self.comp_lo)
+            self.__clear_fields(self.comp_lo)
 
             # Delete the invoice generator config.JSON
             CONFIG_FILE_PATH.unlink(True)
@@ -320,8 +338,8 @@ class MainWindow(QMainWindow):
             
             self.image_lbl.clear()        
 
-    def collect_data(self) -> dict:
-        """ This function will collect the data entered to various 
+    def _collect_data(self) -> dict:
+        """ This method will collect the data entered to various 
             sections of the GUI into one dictionary data structure.
 
         Returns:
@@ -333,25 +351,25 @@ class MainWindow(QMainWindow):
         # Get the logo file path if it exists
         data["Logo File"] = self.logo
 
-        data["Service Provider Information"] = self._get_comp_fields()
-        data["Billing Information"] = self._get_bill_fields()
+        data["Service Provider Information"] = self.__get_comp_fields()
+        data["Billing Information"] = self.__get_bill_fields()
         
         # Get all the invoiced items 
-        data["Invoiced Items"] = self._get_table_items() 
+        data["Invoiced Items"] = self.__get_table_items() 
 
         # Get the tax percentage 
         data["Tax"] = self.tax.text().strip()
 
         return data
     
-    def gen_PDF(self, save_path: Path) -> None:
-        """ This function will generate the PDF invoice
+    def _gen_PDF(self, save_path: Path) -> None:
+        """ This method will generate the PDF invoice
             based on the information entered into the GUI fields.
 
         Args:
             save_path (Path): path object to the user selected PDF save location.
         """
-        data = self.collect_data()
+        data = self._collect_data()
         pdf_generator = PDF(save_path, data, orientation="P",
                             unit="mm", format="Letter")
         status = pdf_generator.write_pdf() 
@@ -360,24 +378,129 @@ class MainWindow(QMainWindow):
             # Show the PDF save location with status bar in GUI
             self.statusBar().showMessage(f'PDF saved as {save_path}')
     
-    def show_invoice_gen_dialog(self) -> None:
-        """ This function will show a pop-up dialog option
+    @classmethod
+    def validate_email(cls, email: str)-> Union[re.Match, None]:
+        """ This class method will verify the user enter format for an email. 
+
+        Args:
+            email (str): string reprenting the user entered email. 
+
+        Returns:
+            Union[re.Match, None]: Regex match group if validation passed. Otherwise, None. 
+        """
+        pattern = r'^$|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(pattern, email)
+
+    @classmethod
+    def validate_phone_number(cls, phone_number:str)-> Union[re.Match, None]:
+        """ This class method will verify the user enter format for an phone number. 
+
+        Args:
+            email (str): string reprenting the user entered phone number. 
+
+        Returns:
+            Union[re.Match, None]: Regex match group if validation passed. Otherwise, None. 
+        """
+        # Allowing multiple phone number formats
+        pattern = r'^$|\(?(\d{3})\)?[-. ]?(\d{3})[-. ]?(\d{4})$'
+        return re.match(pattern, phone_number)
+
+    @classmethod
+    def validate_canadian_postal_code(cls, postal_code:str) -> Union[re.Match, None]:
+        """ This class method will verify the user enter format for an postal code. 
+
+        Args:
+            email (str): string reprenting the user entered postal code. 
+
+        Returns:
+            Union[re.Match, None]: Regex match group if validation passed. Otherwise, None. 
+        """
+        # Allowing multiple postal code formats
+        pattern = r'^[A-Za-z]\d[A-Za-z]( |-)?\d[A-Za-z]\d$'
+        return re.match(pattern, postal_code)
+    
+    def __validate_widget_style(self, valid_result: Union[re.Match, None], widget: QWidget)-> bool:
+        """ This method will change the border colors of the given 'widget' based on 'valid_result'.
+
+        Args:
+            valid_result (Union[re.Match, None]): Regex match group if validation passed. Otherwise, None. 
+            widget (QWidget): field entry from which the text was verified.
+
+        Returns:
+            bool: if the format of the field entry is correct, return True. Otherwise, False. 
+        """
+        getattr(widget, "setStyleSheet")(f"border: 1px solid {'red' if not valid_result else 'black'};")
+        if not valid_result:
+            return False
+        return True 
+    
+    def __validate_fields(self) -> bool:
+        """ This function will validate user into format for fields 
+            such as phone number, email and postal code. 
+
+        Returns:
+            bool: True is all fields are in the proper format.
+                  Otherwise, False. 
+        """
+        validation_msg = "Invalid format! Please check the fields highligted in red."
+        valid_flag = True
+        comp_data = self.__get_comp_fields()
+        bill_data = self.__get_bill_fields()
+
+        # Verify service provider data 
+        valid_email_comp = self.validate_email(comp_data["Email"])
+        valid_phone_comp = self.validate_phone_number(comp_data["Phone Number"])
+        valid_postal_comp = self.validate_canadian_postal_code(comp_data["Postal Code"])
+
+        # Update the border around the field with red or black depending on the validation results
+        valid_flag &= self.__validate_widget_style(valid_email_comp, self.comp_email)
+        valid_flag &= self.__validate_widget_style(valid_phone_comp, self.comp_phone)
+        valid_flag &= self.__validate_widget_style(valid_postal_comp, self.comp_postal_code)
+
+        # Verify service provider data 
+        valid_email_bill = self.validate_email(bill_data["Bill To:"]["Email"])
+        valid_phone_bill = self.validate_phone_number(bill_data["Bill To:"]["Phone Number"])
+        valid_postal_bill = self.validate_canadian_postal_code(bill_data["Bill To:"]["Postal Code"])
+        valid_postal_bill_loc = self.validate_canadian_postal_code(bill_data["Job Location:"]["Postal Code"])
+        
+        # Update the border around the field with red or black depending on the validation results
+        valid_flag &= self.__validate_widget_style(valid_email_bill, self.bill_email)
+        valid_flag &= self.__validate_widget_style(valid_phone_bill, self.bill_phone)
+        valid_flag &= self.__validate_widget_style(valid_postal_bill, self.bill_postal_code)
+        valid_flag &= self.__validate_widget_style(valid_postal_bill_loc, self.bill_postal_code_loc)
+
+        # Display the validation error in the window status bar
+        if not valid_flag:
+            self.statusBar().showMessage(validation_msg)
+        else:
+            self.statusBar().clearMessage()
+
+        return valid_flag
+
+    def _show_invoice_gen_dialog(self) -> None:
+        """ This method will show a pop-up dialog option
             prompting the user to name and save the PDF invoice to a
             specific location.
         """
+        # Validate fields entered into the form
+        if not self.__validate_fields():
+            return None 
+
         # Save the company information to config.JSON 
-        self._get_comp_fields(save=True)
+        self.__get_comp_fields(save=True)
 
         # Allow read-only files and hide name filter details 
         options = QFileDialog.Option.ReadOnly | QFileDialog.Option.HideNameFilterDetails
 
-        file_path, _ = QFileDialog.getSaveFileName(self, "Save PDF Invoice File", "", "PDF Files (*.pdf);;All Files (*)", options=options)
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save PDF Invoice File", "",
+                                                   "PDF Files (*.pdf);;All Files (*)",
+                                                   options=options)
 
         if file_path:
-            self.gen_PDF(Path(file_path))
+            self._gen_PDF(Path(file_path))
 
-    def create_item_table(self) -> None:
-        """ This function creates the portion of the GUI for adding 
+    def _create_item_table(self) -> None:
+        """ This method creates the portion of the GUI for adding 
             items to the invoice. 
         """
         # Table of the left side and "Add Item" form on the right side 
@@ -410,13 +533,15 @@ class MainWindow(QMainWindow):
         table_btn_group.setLayout(table_btn_lo)
 
         # Add table item delete button 
-        btn_del = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table-delete-row.png")), 'Delete Item')
-        btn_del.clicked.connect(self.delete_item) # type: ignore
+        btn_del = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table-delete-row.png")),
+                              'Delete Item')
+        btn_del.clicked.connect(self._delete_item) # type: ignore
         table_btn_lo.addWidget(btn_del)
         
         # Add clear table button 
-        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table--minus.png")), 'Clear Table')
-        btn_clear.clicked.connect(self.clear_table) # type: ignore
+        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table--minus.png")),
+                                'Clear Table')
+        btn_clear.clicked.connect(self._clear_table) # type: ignore
         table_btn_lo.addWidget(btn_clear)
 
         l_lo.addWidget(table_btn_group)
@@ -452,23 +577,27 @@ class MainWindow(QMainWindow):
         btn_lo.setContentsMargins(0, 0, 0, 0)
         btn_widget.setLayout(btn_lo)
 
-        btn_add = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/plus-button.png")), 'Add')
-        btn_add.clicked.connect(self.add_item)
+        btn_add = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/plus-button.png")),
+                              'Add')
+        btn_add.clicked.connect(self._add_item)
 
-        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/bin-metal.png")), 'Clear')
-        btn_clear.clicked.connect(self.clear_item_form)
+        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/bin-metal.png")),
+                                'Clear')
+        btn_clear.clicked.connect(self.__clear_item_form)
         
         btn_lo.addWidget(btn_add)
         btn_lo.addWidget(btn_clear)
         r_lo.setWidget(3, QFormLayout.ItemRole.FieldRole, btn_widget)
 
         self.main_lo.addLayout(self.table_lo)
+        self.main_lo.addWidget(QHLine()) 
 
-    def clear_table(self, override_conf:bool) -> None:
-        """ This function will clear the whole invoice table.
+    def _clear_table(self, override_conf:bool) -> None:
+        """ This method will clear the whole invoice table.
 
         Args:
-            override_conf (bool): if True, no confirmation dialog will be presented. 
+            override_conf (bool): if True, no confirmation dialog
+                                  will be presented. 
         """
         if not override_conf:
             reply = QMessageBox.question(self, "Clear Table Confirmation",
@@ -479,9 +608,14 @@ class MainWindow(QMainWindow):
         else:
             self.table.setRowCount(0)
 
-    def delete_item(self) -> Union[None, QMessageBox]:
-        """ This function deletes the selected items from 
+    def _delete_item(self) -> Union[None, QMessageBox]:
+        """ This method deletes the selected items from 
             the invoice table.
+
+        Returns:
+            Union[None, QMessageBox]: If no table rows are selected,
+                                      a warning message is returned.
+                                      Otherwise, None.
         """
         # Figure out which rows are selected 
         selected_rows = set()
@@ -493,13 +627,15 @@ class MainWindow(QMainWindow):
         if len(selected_rows) == 0:
             return QMessageBox.warning(self, 'Warning','Please select a record to delete') # type: ignore
 
-        button = QMessageBox.question(self, 'Clear Row(s) Confirmation', 'Are you sure that you want to delete the selected row?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        button = QMessageBox.question(self, 'Clear Row(s) Confirmation', 
+                                      'Are you sure that you want to delete the selected row?', 
+                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if button == QMessageBox.StandardButton.Yes:
             for row in selected_rows:
                 self.table.removeRow(row) # type: ignore
 
-    def add_item(self) -> None:
-        """ This function adds a new item to the table from
+    def _add_item(self) -> None:
+        """ This method adds a new item to the table from
             'Add New Item' form.
         """ 
         row = self.table.rowCount()
@@ -517,16 +653,16 @@ class MainWindow(QMainWindow):
         self.table.setItem(row, 0, QTableWidgetItem(str(quantity)))
         self.table.setItem(row, 3, QTableWidgetItem(str(line_total)))
 
-        self.clear_item_form()
+        self.__clear_item_form()
 
-    def clear_item_form(self) -> None:
-        """ This function clears the 'Add New Item' form.""" 
+    def __clear_item_form(self) -> None:
+        """ This method clears the 'Add New Item' form.""" 
         self.quantity.setValue(1)
         self.unit_price.setValue(0)
         self.item_desc.clear()
 
-    def create_header(self) -> None:
-        """ This function creates the header GUI for the billing invoice 
+    def _create_header(self) -> None:
+        """ This method creates the header GUI for the billing invoice 
             generator.
         """
         header_group = QGroupBox("Invoice Header")
@@ -563,12 +699,15 @@ class MainWindow(QMainWindow):
         
         # Add header group to the main layout 
         self.main_lo.addWidget(header_group)
+        self.main_lo.addWidget(QHLine()) 
 
     def _import_logo(self) -> None:
-        """ This function will import the logo image into the invoice 
+        """ This method will import the logo image into the invoice 
             generation GUI.
         """
-        file_name, _ = QFileDialog.getOpenFileName(self, "Select Logo Image", "", "Image Files (*.png *.jpg *.jpeg *.bmp *.gif);;All Files (*)", options=QFileDialog.Option.ReadOnly)
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select Logo Image", "",
+                                                   "Image Files (*.png *.jpg *.jpeg *.bmp *.gif);;All Files (*)", 
+                                                   options=QFileDialog.Option.ReadOnly)
     
         if file_name:
             file_name = Path(file_name)
@@ -577,8 +716,8 @@ class MainWindow(QMainWindow):
             shutil.copyfile(file_name, cpy_path)
             self._add_logo_image(cpy_path)
 
-    def _add_logo_image(self, logo_file: Path=None) -> None:
-        """ This function add the image from 'logo_file' to the GUI 
+    def _add_logo_image(self, logo_file: Path=None) -> None: # type: ignore
+        """ This method adds the image from 'logo_file' to the GUI 
             header. 
 
         Args:
@@ -597,8 +736,8 @@ class MainWindow(QMainWindow):
                                             Qt.AspectRatioMode.KeepAspectRatio,
                                             Qt.TransformationMode.SmoothTransformation))
 
-    def create_billing_header(self) -> None:
-        """ This function creates the GUI elements for inserting 
+    def _create_billing_header(self) -> None:
+        """ This method creates the GUI elements for inserting 
             billing information.        
         """
         billing_group = QGroupBox("Billing Information")
@@ -623,7 +762,7 @@ class MainWindow(QMainWindow):
         self.main_lo.addWidget(billing_group)
 
     def _build_billing_rframe(self, frame: QFrame) -> None:
-        """ This function creates the GUI elements for inserting 
+        """ This method creates the GUI elements for inserting 
             the billing name and address. 
 
         Args:
@@ -655,13 +794,13 @@ class MainWindow(QMainWindow):
         self.bill_prov.addItems(PROVINCE_ABRV_LIST)
         sub_h_lo.addWidget(self.bill_prov)
     
-        self.bill_postal_code = QLineEdit()
-        self.bill_postal_code.setPlaceholderText("Postal Code")
-        sub_h_lo.addWidget(self.bill_postal_code)
+        self.bill_postal_code_loc = QLineEdit()
+        self.bill_postal_code_loc.setPlaceholderText("Postal Code")
+        sub_h_lo.addWidget(self.bill_postal_code_loc)
         r_lo.setWidget(2, QFormLayout.ItemRole.FieldRole, sub_widget)
 
     def _build_billing_mframe(self, frame: QFrame) -> None:
-        """ This function creates the GUI elements for inserting
+        """ This method creates the GUI elements for inserting
             job description.
 
         Args:
@@ -679,7 +818,7 @@ class MainWindow(QMainWindow):
         mid_lo.setWidget(0, QFormLayout.ItemRole.FieldRole, self.job_desc)
 
     def _build_billing_lframe(self, frame: QFrame) -> None:
-        """ This function creates the GUI elements for inserting
+        """ This method creates the GUI elements for inserting
             billing information for the customer.
         Args:
             frame (QFrame): parent frame for the 'QFormLayout' 
@@ -744,8 +883,8 @@ class MainWindow(QMainWindow):
         self.bill_email.setPlaceholderText("Email")
         l_lo.setWidget(5, QFormLayout.ItemRole.FieldRole, self.bill_email)
 
-    def create_company_header(self) -> None:
-        """ This function creates the GUI elements for inserting 
+    def _create_company_header(self) -> None:
+        """ This method creates the GUI elements for inserting 
             company information.        
         """
         comp_group = QGroupBox("Service Provider Information")
@@ -769,9 +908,10 @@ class MainWindow(QMainWindow):
 
         # Add company layout to the main layout 
         self.main_lo.addWidget(comp_group)
+        self.main_lo.addWidget(QHLine())
 
     def _build_company_rframe(self, frame: QFrame) -> None:
-        """ This function creates the GUI elements for the right hand
+        """ This method creates the GUI elements for the right hand
             side of the company information section.        
         """
                 
@@ -821,7 +961,7 @@ class MainWindow(QMainWindow):
             self.tax.setText(JSON_CONFIG["Tax"])
 
     def _build_company_lframe(self, frame: QFrame) -> None:
-        """ This function creates the GUI elements for the left hand
+        """ This method creates the GUI elements for the left hand
             side of the company information section.    
 
         Args:

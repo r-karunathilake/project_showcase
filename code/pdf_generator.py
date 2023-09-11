@@ -1,10 +1,9 @@
 from fpdf.enums import XPos, YPos, Align, MethodReturnValue, TableCellFillMode
-from fpdf.fonts import FontFace
 from decimal import Decimal, ROUND_DOWN
+from fpdf.fonts import FontFace
 from pathlib import Path
 from fpdf import FPDF
 
-BASE_RES_PATH = Path(r"C:\Users\rlakn\Documents\Coding_Lessons\Invoice_Generator_Project\resources")
 TITLE = "INVOICE"
 
 class PDF(FPDF):
@@ -23,13 +22,53 @@ class PDF(FPDF):
 
         self.col = 0 # Current column
         self.y0 = 0 # Ordinate of column start 
+    
+    @staticmethod
+    def format_phone_num(phone_num: str) -> str:
+        """ This static method will format the 'phone_num' string 
+            with "-" in the correct location and return that string.
+
+        Args:
+            phone_num (str): the phone number string to be formatted
+
+        Returns:
+            str: correctly formatted string. (e.g XXX-XXX-XXXX) 
+        """
+        # Remove any non-numeric characters (e.g., spaces, parentheses, and hyphens)
+        phone_num = ''.join(filter(str.isdigit, phone_num))
+
+        # Format the phone number with "-"
+        return f"{phone_num[:3]}-{phone_num[3:6]}-{phone_num[6:]}" if phone_num else ""
+
+    @staticmethod
+    def format_post_code(post_code: str) -> str:
+        """ This static method will format the 'psot_code' string 
+            with "-" in the correct location and return that string.
+
+        Args:
+            post_code (str): the psotal code string to be formatted
+
+        Returns:
+            str: correctly formatted string. (e.g XXX-XXX) 
+        """
+        # Remove any alphanumeric characters (e.g., spaces, parentheses, and hyphens)
+        # and capitalize all characters
+        post_code = ''.join(filter(str.isalnum, post_code)).upper()
+
+        return '-'.join(post_code[i:i+3] for i in range(0, len(post_code), 3)) if post_code else ""
 
     def _move_to_column(self, col: int, num_col: int, col_spacing: int) -> float:
-        """ This function will move the cursor to the start of 
+        """This function will move the cursor to the start of 
             requested column.
 
         Args:
-            col (int): current column number to be set. 
+            col (int): current column number to which the cursor will move. 
+            num_col (int): total number of columns requested per page. 
+            col_spacing (int): separation distance for each column. 
+
+        Returns:
+            float: width of the column based on the page effective
+                   width and number of columns requested. 
         """
         self.col = col
         x = self.l_margin + (col * ((self.epw/num_col) + col_spacing)) 
@@ -50,6 +89,9 @@ class PDF(FPDF):
         self.line(self.l_margin, self.y, self.l_margin + self.epw, self.y)
 
     def footer(self):
+        """ Override parent class method to add a custom footer to each page
+            of the invoice document. 
+        """
         # Set position of the footer
         self.set_y(-15) # 15 mm from the bottom
         self.set_font("helvetica", "I", 10)
@@ -59,7 +101,8 @@ class PDF(FPDF):
         self.cell(0, 10, f"Page {self.page_no()}/{{nb}}", align=Align.C)
 
     def header(self) -> None:
-        """ Add the invoice logo to the header.
+        """ Override the parent calss method to add a custom header to each page
+            of the invoice document. 
         """
         # Header font
         self.set_font("helvetica", "B", 36)
@@ -119,12 +162,12 @@ class PDF(FPDF):
         # Left details 
         y_start = self.get_y()
         col_w = self._move_to_column(0, 2 ,5) # move to first column with 5 mm spacing
-        
+
         l_string = f"""{comp_info["Company Name"]}
 {comp_info['First Name']} {comp_info['Last Name']}
 {comp_info["Street"]}
-{comp_info['City']} {comp_info['Province']} {comp_info['Postal Code']}
-{comp_info['Phone Number']}
+{comp_info['City']} {comp_info['Province']} {PDF.format_post_code(comp_info['Postal Code'])}
+{PDF.format_phone_num(comp_info['Phone Number'])}
 {comp_info['Email']}"""
 
         v_space_used_l = self.multi_cell(col_w, 5, l_string, border=False, output=MethodReturnValue.HEIGHT)
@@ -160,32 +203,35 @@ class PDF(FPDF):
         y_start = self.get_y()
         self.set_x(self.l_margin)
         
-        l_string = f"""Bill To: 
+        l_string = f"""Bill To:
+
     {bill_to['First Name']} {bill_to['Last Name']}
     {bill_to["Company Name"]}
     {bill_to["Street"]}
-    {bill_to['City']} {bill_to['Province']} {bill_to['Postal Code']}
-    {bill_to['Phone Number']}
+    {bill_to['City']} {bill_to['Province']} {PDF.format_post_code(bill_to['Postal Code'])}
+    {PDF.format_phone_num(bill_to['Phone Number'])}
     {bill_to['Email']}"""
         
-        v_space_used_l = self.multi_cell(0.3*self.epw, 5, l_string, border=False, output=MethodReturnValue.HEIGHT)
+        v_space_used_l = self.multi_cell(0.35*self.epw, 5, l_string, border=False, output=MethodReturnValue.HEIGHT)
 
         # Middle job details 
         self.set_y(y_start)
-        self.set_x(self.l_margin + 5 + 0.3*self.epw)
+        self.set_x(self.l_margin + 5 + 0.35*self.epw)
         
         m_string = f"""Job Description:
+
     {job_desc}"""
         
         v_space_used_m = self.multi_cell(0.3*self.epw, 5, m_string, border=False, align=Align.L, output=MethodReturnValue.HEIGHT)
 
         # Right details 
         self.set_y(y_start)
-        self.set_x(self.l_margin + 5 + 0.6*self.epw + 5)
+        self.set_x(self.l_margin + 5 + 0.65*self.epw + 5)
         
         r_string = f"""Job Location:
+
     {job_loc["Street"]}
-    {job_loc['City']} {job_loc['Province']} {job_loc['Postal Code']}"""
+    {job_loc['City']} {job_loc['Province']} {PDF.format_post_code(job_loc['Postal Code'])}"""
         
         v_space_used_r = self.multi_cell((self.epw + self.l_margin) - (self.l_margin + 5 + 0.6*self.epw + 5), 5, r_string, border=False, align=Align.L, output=MethodReturnValue.HEIGHT)
 
@@ -206,22 +252,27 @@ class PDF(FPDF):
         total = total.quantize(Decimal('.01'), rounding=ROUND_DOWN)
 
         table_data = self.data["Invoiced Items"]
-        table_headings = table_data[0].keys()
+        try:
+            table_headings = table_data[0].keys()
+        except IndexError as e:
+            # No invoiced items to be added
+            return None
+        
         table_data = [row.values() for row in table_data]
         
         self.set_draw_color(0, 0, 0)
         self.set_line_width(0.3)
         headings_style = FontFace(emphasis="", color=255, fill_color=(0, 76, 153))
         with self.table(
-            borders_layout="INTERNAL",
-            cell_fill_color=(128,128,128),
-            cell_fill_mode=TableCellFillMode.ROWS,
-            col_widths=(10, 55, 15, 20),
-            headings_style=headings_style,
-            line_height=6,
-            text_align=(Align.C, Align.L, Align.R, Align.R),
-            width=self.epw,
-        ) as table:
+                        borders_layout="INTERNAL",
+                        cell_fill_color=(128,128,128),
+                        cell_fill_mode=TableCellFillMode.ROWS,
+                        col_widths=(10, 55, 15, 20),
+                        headings_style=headings_style,
+                        line_height=6,
+                        text_align=(Align.C, Align.L, Align.R, Align.R),
+                        width=self.epw,
+                    ) as table:
             row = table.row()
             for heading in table_headings:
                 row.cell(heading, align=Align.C)
@@ -274,6 +325,3 @@ class PDF(FPDF):
         # Output the PDF 
         self.output(str(self.save_path))
         return True
-
-if __name__ == "__main__":
-    pass 
