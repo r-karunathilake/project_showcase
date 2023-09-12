@@ -21,6 +21,14 @@ import json
 import sys
 import re 
 
+# Properly configure Windows application group
+try:
+    from ctypes import windll
+    myappid = "Invoice Generator"
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid) 
+except ImportError:
+    pass
+
 """This file contains the necessary code to build the GUI and methodality to 
 extract and parse user input data for the invoice generator"""
 
@@ -109,7 +117,7 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
     
         self.setWindowTitle(APP_NAME) # Name of the GUI window
-        self.setWindowIcon(QIcon(str(Path.cwd() / "resources/app_logo.png"))) # Add window icon
+        self.setWindowIcon(QIcon(str(Path.cwd() / "resources/app_logo.ico"))) # Add window icon
         # Apply the modern stylesheet to the entire GUI
         self.setStyleSheet(CSS_STYLE) 
 
@@ -142,17 +150,17 @@ class MainWindow(QMainWindow):
         f_lo = QHBoxLayout(f_group)
         
         # Generate invoice button 
-        btn_gen = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/blue-document-pdf-text.png")), 'Generate Invoice')
+        btn_gen = QPushButton(QIcon(str(Path.cwd() / "resources/blue-document-pdf-text.png")), 'Generate Invoice')
         btn_gen.clicked.connect(self._show_invoice_gen_dialog) # type: ignore
         f_lo.addWidget(btn_gen)
 
         # Generate new invoice button
-        btn_new = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/blue-document--plus.png")), 'New Invoice')
+        btn_new = QPushButton(QIcon(str(Path.cwd() / "resources/blue-document--plus.png")), 'New Invoice')
         btn_new.clicked.connect(self.__new_invoice) # type: ignore
         f_lo.addWidget(btn_new)
 
         # Reset all fields of the invoice generator 
-        btn_reset= QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/arrow-circle.png")), 'Reset')
+        btn_reset= QPushButton(QIcon(str(Path.cwd() / "resources/arrow-circle.png")), 'Reset')
         btn_reset.clicked.connect(self.__reset_invoice_gen) # type: ignore
         f_lo.addWidget(btn_reset)
 
@@ -533,13 +541,13 @@ class MainWindow(QMainWindow):
         table_btn_group.setLayout(table_btn_lo)
 
         # Add table item delete button 
-        btn_del = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table-delete-row.png")),
+        btn_del = QPushButton(QIcon(str(Path.cwd() / "resources/table-delete-row.png")),
                               'Delete Item')
         btn_del.clicked.connect(self._delete_item) # type: ignore
         table_btn_lo.addWidget(btn_del)
         
         # Add clear table button 
-        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/table--minus.png")),
+        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/table--minus.png")),
                                 'Clear Table')
         btn_clear.clicked.connect(self._clear_table) # type: ignore
         table_btn_lo.addWidget(btn_clear)
@@ -577,11 +585,11 @@ class MainWindow(QMainWindow):
         btn_lo.setContentsMargins(0, 0, 0, 0)
         btn_widget.setLayout(btn_lo)
 
-        btn_add = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/plus-button.png")),
+        btn_add = QPushButton(QIcon(str(Path.cwd() / "resources/plus-button.png")),
                               'Add')
         btn_add.clicked.connect(self._add_item)
 
-        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/icon_set/icons/bin-metal.png")),
+        btn_clear = QPushButton(QIcon(str(Path.cwd() / "resources/bin-metal.png")),
                                 'Clear')
         btn_clear.clicked.connect(self.__clear_item_form)
         
@@ -951,6 +959,7 @@ class MainWindow(QMainWindow):
         # Line #5 
         self.tax = QLineEdit()
         self.tax.setPlaceholderText("Tax")
+        self.tax.setText("5")
         r_lo.setWidget(4, QFormLayout.ItemRole.LabelRole, QLabel("Tax %:"))
         r_lo.setWidget(4, QFormLayout.ItemRole.FieldRole, self.tax)
 

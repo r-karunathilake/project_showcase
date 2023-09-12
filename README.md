@@ -1,7 +1,7 @@
 # PDF INVOICE GENERATOR 
 
 ## Description 
-This projects provides the user with a GUI application to quickly create a standard profesionally formatted PDF invoice for their business. The application also provides the user the ability to import a custom logo into the final PDF invoice.  
+This Python project provides the user with a GUI application to quickly create a standard profesionally formatted PDF invoice for their business. The application also provides the user the ability to import a custom logo into the final PDF invoice.  
 
 ## Installation Instructions 
 
@@ -23,13 +23,9 @@ This project is licensed under the [Creative Commons Attribution 3.0 Unported Li
 ## Dependencies 
 This project tested to function properly with the following Python dependencies:
 
-- defusedxml(v0.7.1)
-- fonttools(v4.42.1) 
-- fpdf2(v2.7.5)
-- pillow(v10.0.0)
-- pyqt6-qt6(v6.4.3) 
-- pyqt6-sip(v13.5.2)
-- pyqt6(v6.4.2) 
+-python = "^3.11"
+-pyqt6 = ">=6.4,<7.0"
+-fpdf2 = "^2.7.5" 
 
 ## Attributions:
 The icon set applied to the GUI buttons in this project was created by [Yusuke Kamiyamane](https://p.yusukekamiyamane.com/) licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). These icons have not been modified from the original.

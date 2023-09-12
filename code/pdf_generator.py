@@ -247,6 +247,8 @@ class PDF(FPDF):
             to the PDF invoice document table. 
         """
         tax_percentage = self.data["Service Provider Information"]["Tax"]
+        if not tax_percentage:
+            tax_percentage = "0"
         sub_total = sum(map(Decimal, [item_row["Line Total"] for item_row in self.data["Invoiced Items"]]))
         total = round(sub_total + ((Decimal(tax_percentage)/100) * sub_total), 2)
         total = total.quantize(Decimal('.01'), rounding=ROUND_DOWN)
