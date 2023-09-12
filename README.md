@@ -15,6 +15,6 @@ This repository was created to hold my personal project files. Each project is s
       <img src="./Optical_Component_Designer/pso_optimizer_output.gif" width="200" height="200">
 </p>
 
-4. **Invoice_Generator**: this directory contains the source code and .exe installer for a desktop application designed to create professional looking PDF invoice documents with ease. During the implementation of this project, I learned nuances of currency calculations as it relates to arithmetic precision, building plaform native application GUIs ([PyQt6](https://pypi.org/project/PyQt6/)) with proper tab orders, and buddies. The code uses the following Python packages: `PyQt6`, and `fpdf2`. 
+3. **Invoice_Generator**: this directory contains the source code and .exe installer for a desktop application designed to create professional looking PDF invoice documents with ease. During the implementation of this project, I learned nuances of currency calculations as it relates to arithmetic precision, building plaform native application GUIs ([PyQt6](https://pypi.org/project/PyQt6/)) with proper tab orders, and buddies. The code uses the following Python packages: `PyQt6`, and `fpdf2`. 
    
 [^1]: More details for some projects can be found in the README.md files under their respective directory. 
