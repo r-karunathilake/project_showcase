@@ -15,13 +15,13 @@ main window (seen below) contains the fields for creating the invoice. The user 
 ### Generate an Invoice 
 Once the user has entered all the necessary information, they may press the 'Generate Invoice' button. Once clicked, the user is requested (through a pop-up window) to select a name for the PDF document and provide a save path.
 
-![This is the main window of the application](/readme_assets/Test_Invoice_GUI.jpg "Main Window")
+![This is the main window of the application](./readme_assets/Test_Invoice_GUI.jpg "Main Window")
 
 The user is able to reset all fields of the application by clicking on the 'Reset' action button at the bottom of the main window. Note: this will also clear any imported logos.
 
 The user can clear just the 'Billing Information' and "Invoiced Items" sections of the application by clicking 'New Invoice' action button. 
 
-[An example of an PDF generated from this application can be found here.](readme_assets/test_invoice.pdf)
+[An example of an PDF generated from this application can be found here.](./readme_assets/test_invoice.pdf)
 
 ## License
 This project is licensed under the [Creative Commons Attribution 3.0 Unported License (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/legalcode).
