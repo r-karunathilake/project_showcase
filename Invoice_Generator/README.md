@@ -34,5 +34,5 @@ This project tested to function properly with the following Python dependencies:
 -fpdf2 = "2.7.5" 
 
 ## Attributions:
-The icon set applied to the GUI buttons in this project was created by [Yusuke Kamiyamane](https://p.yusukekamiyamane.com/) licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). These icons have not been modified from the original.
+The icon set applied to the GUI buttons in this project was created by [Yusuke Kamiyamane](https://p.yusukekamiyamane.com/) licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). These icons remain unaltered from their original form.
 
