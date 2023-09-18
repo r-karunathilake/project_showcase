@@ -13,13 +13,12 @@ import com.chess.engine.board.NormalMove;
 import com.chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
 
-public class Bishop extends Piece{
-
-    // For a bishop, these are all the coordinate vectors for a given
+public class Rook extends Piece{
+    // For a rook, these are all the coordinate vectors for a given
     // bishop position with the largest degree of freedom (on a 8x8 tile board).
-    private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-9, -7, 7, 9};
-   
-    Bishop(int piecePosition, Alliance pieceAlliance) {
+    private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-8, -1, 1, 8};
+
+    Rook(int piecePosition, Alliance pieceAlliance) {
         super(piecePosition, pieceAlliance);
     }
 
@@ -73,12 +72,12 @@ public class Bishop extends Piece{
         }
         return ImmutableList.copyOf(legalMoves);
     }
-
     private static boolean isEighthColumnExclusion(int currentPos, int candidateOffset) {
-        return BoardUtils.EIGHTH_COLUMN[currentPos] && (candidateOffset == -7 || candidateOffset == 9);
+        return BoardUtils.EIGHTH_COLUMN[currentPos] && candidateOffset == 1;
     }
 
     private static boolean isFirstColumnExclusion(int currentPos, int candidateOffset) {
-        return BoardUtils.FIRST_COLUMN[currentPos] && (candidateOffset == 7 || candidateOffset == -9);
+        return BoardUtils.FIRST_COLUMN[currentPos] && candidateOffset == -1;
     }
 }
+ 
