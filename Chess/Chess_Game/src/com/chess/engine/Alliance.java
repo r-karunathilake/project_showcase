@@ -3,5 +3,6 @@ package com.chess.engine;
 which two player sides in a game of chess*/
 
 public enum Alliance {
-    
+    WHITE,
+    BLACK
 }
