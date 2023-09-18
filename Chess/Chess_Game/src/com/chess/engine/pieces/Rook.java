@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.List;
 
 import com.chess.engine.Alliance;
-import com.chess.engine.board.AttackMove;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
-import com.chess.engine.board.Move;
-import com.chess.engine.board.NormalMove;
 import com.chess.engine.board.Tile;
+import com.chess.engine.board.move.AttackMove;
+import com.chess.engine.board.move.Move;
+import com.chess.engine.board.move.NormalMove;
 import com.google.common.collect.ImmutableList;
 
 public class Rook extends Piece{
