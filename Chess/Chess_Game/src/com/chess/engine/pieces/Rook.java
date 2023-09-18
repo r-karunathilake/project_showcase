@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 
 public class Rook extends Piece{
     // For a rook, these are all the coordinate vectors for a given
-    // bishop position with the largest degree of freedom (on a 8x8 tile board).
+    // rook position with the largest degree of freedom (on a 8x8 tile board).
     private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-8, -1, 1, 8};
 
     Rook(int piecePosition, Alliance pieceAlliance) {
@@ -27,23 +27,23 @@ public class Rook extends Piece{
         final List<Move> legalMoves = new ArrayList<>(); 
 
         for(final int currentCandidateOffset:CANDIDATE_MOVE_VECTOR_OFFSETS){
-            // Apply the offset to the current position of the bishop 
+            // Apply the offset to the current position of the rook 
             int candidateDestinationCoordinate = this.piecePosition;
 
             while(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
                 // Update the candidate move coordinate position since
-                // the bishop is inside the chess board.
+                // the rook is inside the chess board.
                 candidateDestinationCoordinate += currentCandidateOffset;
 
                 // If the candidate position is inside the board 
                 if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
                     // Edge cases
                     if(isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) 
-                       || isEighthColumnExclusion(this.piecePosition, currentCandidateOffset)){
-                     // This is not a valid candidate position when the bishop is
-                     // in any of these column on the chess board. 
-                     continue;
-                 }
+                        || isEighthColumnExclusion(this.piecePosition, currentCandidateOffset)){
+                        // This is not a valid candidate position when the rook is
+                        // in any of these column on the chess board. 
+                        continue;
+                    }
                     final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
                     // If the tile is not occupied, it a legal move
@@ -55,7 +55,7 @@ public class Rook extends Piece{
                         final Piece pieceAtCandidateDestination = candidateDestinationTile.getPiece();
                         final Alliance pieceAlliance = pieceAtCandidateDestination.getPieceAlliance(); 
                         
-                        // If the bishop alliance is NOT equal to the piece at candidate location,
+                        // If the rook alliance is NOT equal to the piece at candidate location,
                         // found an enemy piece.  
                         if(this.pieceAlliance != pieceAlliance){
                             legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate,

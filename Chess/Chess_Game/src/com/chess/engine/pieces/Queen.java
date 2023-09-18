@@ -13,13 +13,13 @@ import com.chess.engine.board.NormalMove;
 import com.chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
 
-public class Bishop extends Piece{
+public class Queen extends Piece{
 
-    // For a bishop, these are all the coordinate vectors for a given
-    // bishop position with the largest degree of freedom (on a 8x8 tile board).
-    private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-9, -7, 7, 9};
-   
-    Bishop(int piecePosition, Alliance pieceAlliance) {
+    // For a queen, these are all the coordinate vectors for a given
+    // queen position with the largest degree of freedom (on a 8x8 tile board).
+    private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-9, -8, -7, -1, 1, 7, 8, 9};
+
+    Queen(int piecePosition, Alliance pieceAlliance) {
         super(piecePosition, pieceAlliance);
     }
 
@@ -28,12 +28,12 @@ public class Bishop extends Piece{
         final List<Move> legalMoves = new ArrayList<>(); 
 
         for(final int currentCandidateOffset:CANDIDATE_MOVE_VECTOR_OFFSETS){
-            // Apply the offset to the current position of the bishop 
+            // Apply the offset to the current position of the queen 
             int candidateDestinationCoordinate = this.piecePosition;
 
             while(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
                 // Update the candidate move coordinate position since
-                // the bishop is inside the chess board.
+                // the queen is inside the chess board.
                 candidateDestinationCoordinate += currentCandidateOffset;
 
                 // If the candidate position is inside the board 
@@ -41,7 +41,7 @@ public class Bishop extends Piece{
                     // Edge cases
                     if(isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) 
                        || isEighthColumnExclusion(this.piecePosition, currentCandidateOffset)){
-                        // This is not a valid candidate position when the bishop is
+                        // This is not a valid candidate position when the queen is
                         // in any of these column on the chess board. 
                         continue;
                     }
@@ -56,7 +56,7 @@ public class Bishop extends Piece{
                         final Piece pieceAtCandidateDestination = candidateDestinationTile.getPiece();
                         final Alliance pieceAlliance = pieceAtCandidateDestination.getPieceAlliance(); 
                         
-                        // If the bishop alliance is NOT equal to the piece at candidate location,
+                        // If the queen alliance is NOT equal to the piece at candidate location,
                         // found an enemy piece.  
                         if(this.pieceAlliance != pieceAlliance){
                             legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate,
@@ -75,10 +75,10 @@ public class Bishop extends Piece{
     }
 
     private static boolean isEighthColumnExclusion(int currentPos, int candidateOffset) {
-        return BoardUtils.EIGHTH_COLUMN[currentPos] && (candidateOffset == -7 || candidateOffset == 9);
+        return BoardUtils.EIGHTH_COLUMN[currentPos] && (candidateOffset == -7 || candidateOffset == 9 || candidateOffset == 1);
     }
 
     private static boolean isFirstColumnExclusion(int currentPos, int candidateOffset) {
-        return BoardUtils.FIRST_COLUMN[currentPos] && (candidateOffset == 7 || candidateOffset == -9);
+        return BoardUtils.FIRST_COLUMN[currentPos] && (candidateOffset == 7 || candidateOffset == -9 || candidateOffset == -1);
     }
 }
