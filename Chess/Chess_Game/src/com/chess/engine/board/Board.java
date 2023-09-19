@@ -15,6 +15,9 @@ import com.chess.engine.pieces.Pawn;
 import com.chess.engine.pieces.Piece;
 import com.chess.engine.pieces.Queen;
 import com.chess.engine.pieces.Rook;
+import com.chess.engine.player.BlackPlayer;
+import com.chess.engine.player.Player;
+import com.chess.engine.player.WhitePlayer;
 import com.google.common.collect.ImmutableList;
 
 public class Board {
@@ -22,14 +25,22 @@ public class Board {
     private final Collection<Piece> whitePieces;
     private final Collection<Piece> blackPieces;
 
+    private final WhitePlayer whitePlayer;
+    private final BlackPlayer blackPlayer;
+    private final Player currentPlayer;
+
     // Board constructor
-    Board(Builder builder){
+    Board(final Builder builder){
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
         
         final Collection<Move> whiteLegalMoves = calculateLegalMoves(this.whitePieces);
         final Collection<Move> blackLegalMoves = calculateLegalMoves(this.blackPieces);
+    
+        this.whitePlayer = new WhitePlayer(this, whiteLegalMoves, blackLegalMoves);
+        this.blackPlayer = new BlackPlayer(this, whiteLegalMoves, blackLegalMoves);
+        this.currentPlayer = builder.nextPlayer.choosePlayer(this.whitePlayer, this.blackPlayer);
     }
 
     // Override the object print method
@@ -127,8 +138,28 @@ public class Board {
         builder.setPiece(new Rook(63, Alliance.WHITE));
   
         // White moves first
-        builder.setNextPlayer(Alliance.WHITE);
+        builder.nextPlayer(Alliance.WHITE);
 
         return builder.build();
+    }
+
+    public Collection<Piece> getBlackPieces() {
+        return blackPieces;
+    }
+
+    public Collection<Piece> getWhitePieces() {
+        return whitePieces;
+    }
+
+    public Player blackPlayer() {
+        return this.blackPlayer;
+    }
+
+    public Player whitePlayer() {
+        return this.whitePlayer;
+    }
+
+    public Player currentPlayer() {
+        return this.currentPlayer;
     }
 }

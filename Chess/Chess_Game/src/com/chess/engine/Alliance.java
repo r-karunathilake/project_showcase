@@ -1,4 +1,9 @@
 package com.chess.engine;
+
+import com.chess.engine.player.BlackPlayer;
+import com.chess.engine.player.Player;
+import com.chess.engine.player.WhitePlayer;
+
 /**This enumeration class type represents 
 which two player sides in a game of chess*/
 
@@ -18,6 +23,12 @@ public enum Alliance {
         public boolean isWhite() {
             return true;
         }
+
+        @Override
+        public Player choosePlayer(final WhitePlayer whitePlayer, 
+                                   final BlackPlayer blackPlayer) {
+            return whitePlayer;
+        }
     },    
     BLACK{
         @Override
@@ -34,8 +45,17 @@ public enum Alliance {
         public boolean isWhite() {
             return false;
         }
+
+        @Override
+        public Player choosePlayer(final WhitePlayer whitePlayer, 
+                                   final BlackPlayer blackPlayer) {
+            return blackPlayer;
+        }
     }; 
     abstract public int getDirection();
     abstract public boolean isBlack();
-    abstract public boolean isWhite(); 
+    abstract public boolean isWhite();
+    abstract public Player choosePlayer(WhitePlayer whitePlayer,
+                                        BlackPlayer blackPlayer);
+
 }

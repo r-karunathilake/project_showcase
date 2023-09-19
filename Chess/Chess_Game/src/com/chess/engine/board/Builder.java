@@ -9,7 +9,7 @@ import com.chess.engine.pieces.Piece;
 // Builder class 
 public class Builder {
     private Map<Integer, Piece> boardConfig;
-    private Alliance nextPlayer;
+    Alliance nextPlayer;
     
     // Builder constructor
     public Builder(){
@@ -21,7 +21,7 @@ public class Builder {
         return this;
     }
 
-    public Builder setNextPlayer(final Alliance nextPlayer){
+    public Builder nextPlayer(final Alliance nextPlayer){
         this.nextPlayer = nextPlayer;
         return this;
     }

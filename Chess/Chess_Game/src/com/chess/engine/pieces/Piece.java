@@ -3,15 +3,18 @@ package com.chess.engine.pieces;
 import java.util.Collection;
 
 import com.chess.engine.Alliance;
+import com.chess.engine.PieceType;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.move.Move;
 
 abstract public class Piece {
+    protected final PieceType pieceType;
     protected final int piecePosition; 
     protected final Alliance pieceAlliance; 
     protected final boolean isFirstMove;
 
-    Piece(final int piecePosition, final Alliance pieceAlliance){
+    Piece(final PieceType pieceType, final int piecePosition, final Alliance pieceAlliance){
+        this.pieceType = pieceType;
         this.pieceAlliance = pieceAlliance;
         this.piecePosition = piecePosition; 
         this.isFirstMove = false;
@@ -25,9 +28,13 @@ abstract public class Piece {
         return this.isFirstMove; 
     }
     // Collection of legal moves for this chess piece 
-    public abstract Collection<Move> calculateLegalMoves(final Board board);
+    abstract public Collection<Move> calculateLegalMoves(final Board board);
 
     public Integer getPiecePosition() {
         return this.piecePosition;
+    }
+
+    public PieceType getPieceType() {
+        return this.pieceType;
     }
 }

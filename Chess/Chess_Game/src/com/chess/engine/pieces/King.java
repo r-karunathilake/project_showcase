@@ -20,8 +20,9 @@ public class King extends Piece{
     // king position with the largest degree of freedom (on a 8x8 tile board).
     private final static int[] CANDIDATE_MOVE_OFFSETS = {-9, -8, -7, -1, 1, 7, 8, 9};
 
-    public King(int piecePosition, Alliance pieceAlliance) {
-        super(piecePosition, pieceAlliance);
+    public King(final int piecePosition, 
+                final Alliance pieceAlliance) {
+        super(PieceType.KING, piecePosition, pieceAlliance);
     }
 
     @Override

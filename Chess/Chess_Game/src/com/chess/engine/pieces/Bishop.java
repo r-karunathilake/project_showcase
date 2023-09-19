@@ -21,7 +21,7 @@ public class Bishop extends Piece{
     private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-9, -7, 7, 9};
    
     public Bishop(final int piecePosition, final Alliance pieceAlliance) {
-        super(piecePosition, pieceAlliance);
+        super(PieceType.BISHOP, piecePosition, pieceAlliance);
     }
 
     @Override
