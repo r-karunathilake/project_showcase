@@ -9,6 +9,13 @@ public final class OccupiedTile extends Tile {
         super(tileCoordinate);
         this.pieceOnTile = pieceOnTile; 
     }
+
+    @Override
+    public String toString(){
+        return getPiece().getPieceAlliance().isBlack() ? 
+        getPiece().toString().toLowerCase() : getPiece().toString();
+    }
+
     @Override
     public boolean isTileOccupied(){
         return true;

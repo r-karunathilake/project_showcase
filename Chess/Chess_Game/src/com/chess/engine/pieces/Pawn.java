@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.chess.engine.Alliance;
+import com.chess.engine.PieceType;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Tile;
@@ -23,8 +24,14 @@ public class Pawn extends Piece{
     // pawn position with the largest degree of freedom (on a 8x8 tile board).
     private final static int[] CANDIDATE_MOVE_OFFSETS = {7, 8, 9, 16};
 
-    Pawn(final int piecePosition, final Alliance pieceAlliance) {
+    // Pawn constructor 
+    public Pawn(final int piecePosition, final Alliance pieceAlliance) {
         super(piecePosition, pieceAlliance);
+    }
+
+    @Override
+    public String toString(){
+        return PieceType.PAWN.toString();
     }
 
     @Override

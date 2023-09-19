@@ -8,6 +8,11 @@ public final class EmptyTile extends Tile{
     }
 
     @Override
+    public String toString(){
+        return "-";
+    }
+
+    @Override
     public boolean isTileOccupied(){
         // By definition, tile is empty
         return false;

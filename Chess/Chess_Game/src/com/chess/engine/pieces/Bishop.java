@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.chess.engine.Alliance;
+import com.chess.engine.PieceType;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Tile;
@@ -19,8 +20,13 @@ public class Bishop extends Piece{
     // bishop position with the largest degree of freedom (on a 8x8 tile board).
     private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-9, -7, 7, 9};
    
-    Bishop(int piecePosition, Alliance pieceAlliance) {
+    public Bishop(final int piecePosition, final Alliance pieceAlliance) {
         super(piecePosition, pieceAlliance);
+    }
+
+    @Override
+    public String toString(){
+        return PieceType.BISHOP.toString();
     }
 
     @Override

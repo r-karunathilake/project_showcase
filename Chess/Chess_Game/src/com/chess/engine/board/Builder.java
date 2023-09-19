@@ -1,0 +1,37 @@
+package com.chess.engine.board;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.chess.engine.Alliance;
+import com.chess.engine.pieces.Piece;
+
+// Builder class 
+public class Builder {
+    private Map<Integer, Piece> boardConfig;
+    private Alliance nextPlayer;
+    
+    // Builder constructor
+    public Builder(){
+        this.boardConfig = new HashMap<>(); 
+    }
+
+    public Builder setPiece(final Piece piece){
+        this.boardConfig.put(piece.getPiecePosition(), piece);
+        return this;
+    }
+
+    public Builder setNextPlayer(final Alliance nextPlayer){
+        this.nextPlayer = nextPlayer;
+        return this;
+    }
+
+    public Board build(){
+        return new Board(this);
+    }
+
+    public Map<Integer, Piece> getBoardConfig(){
+        return boardConfig;
+    }
+
+}

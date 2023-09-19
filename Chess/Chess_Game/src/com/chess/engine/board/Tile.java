@@ -18,7 +18,7 @@ abstract public class Tile {
     protected Tile(final int tileCoordinate){
         this.tileCoordinate = tileCoordinate;
     }
-
+    
     public static Tile createTile(final int tileCoordinate, final Piece piece){
         return piece != null ? new OccupiedTile(tileCoordinate, piece) : EMPTY_TILES_CACHE.get(tileCoordinate);
     }
