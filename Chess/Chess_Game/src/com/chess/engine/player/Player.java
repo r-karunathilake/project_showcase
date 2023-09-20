@@ -11,11 +11,12 @@ import com.chess.engine.board.move.Move;
 import com.chess.engine.pieces.King;
 import com.chess.engine.pieces.Piece;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 abstract public class Player {
     protected final Board board;
     protected final King playerKing;
-    protected final Collection<Move> legalMoves;
+    private final Collection<Move> legalMoves;
     private final boolean isInCheck;
 
     Player(final Board board,
@@ -24,12 +25,12 @@ abstract public class Player {
         
         this.board = board;
         this.playerKing = findKing();
-        this.legalMoves = legalMoves; 
+        this.legalMoves = ImmutableList.copyOf(Iterables.concat(legalMoves, opponentMoves)); 
         // False, if there are no attacks currently on the chess tile containing the King piece
         this.isInCheck = !Player.calculateAttacksOnTile(this.playerKing.getPiecePosition(), opponentMoves).isEmpty();
     }
 
-    private static Collection<Move> calculateAttacksOnTile(Integer piecePosition, Collection<Move> enemyMoves) {
+    protected static Collection<Move> calculateAttacksOnTile(Integer piecePosition, Collection<Move> enemyMoves) {
         final List<Move> attackMoves = new ArrayList<>(); 
 
         for(final Move move : enemyMoves){
@@ -105,7 +106,7 @@ abstract public class Player {
         return new MoveTransition(transitionBoard, move, MoveStatus.DONE); 
     }
 
-    private Collection<Move> getLegalMoves() {
+    public Collection<Move> getLegalMoves() {
         return this.legalMoves;
     }
 
@@ -116,4 +117,6 @@ abstract public class Player {
     abstract public Collection<Piece> getActivePieces();
     abstract public Alliance getAlliance();
     abstract public Player getOpponent();
+    
+    abstract protected Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals);
 }

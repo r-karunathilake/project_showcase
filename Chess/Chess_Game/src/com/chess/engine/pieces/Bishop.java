@@ -87,4 +87,9 @@ public class Bishop extends Piece{
     private static boolean isFirstColumnExclusion(int currentPos, int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPos] && (candidateOffset == 7 || candidateOffset == -9);
     }
+
+    @Override
+    public Bishop newPiece(final Move move) {
+       return new Bishop(move.getDestinationCoordinate(), move.getMovedPiece().getPieceAlliance());
+    }
 }

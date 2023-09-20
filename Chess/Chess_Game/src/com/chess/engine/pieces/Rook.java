@@ -86,5 +86,10 @@ public class Rook extends Piece{
     private static boolean isFirstColumnExclusion(int currentPos, int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPos] && candidateOffset == -1;
     }
+
+    @Override
+    public Rook newPiece(final Move move) {
+       return new Rook(move.getDestinationCoordinate(), move.getMovedPiece().getPieceAlliance());
+    }
 }
  

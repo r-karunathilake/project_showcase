@@ -88,4 +88,9 @@ public class Queen extends Piece{
     private static boolean isFirstColumnExclusion(int currentPos, int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPos] && (candidateOffset == 7 || candidateOffset == -9 || candidateOffset == -1);
     }
+
+    @Override
+    public Queen newPiece(final Move move) {
+       return new Queen(move.getDestinationCoordinate(), move.getMovedPiece().getPieceAlliance());
+    }
 }

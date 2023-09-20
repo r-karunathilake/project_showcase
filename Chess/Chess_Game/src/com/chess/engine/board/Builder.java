@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.chess.engine.Alliance;
+import com.chess.engine.pieces.Pawn;
 import com.chess.engine.pieces.Piece;
 
 // Builder class 
 public class Builder {
     private Map<Integer, Piece> boardConfig;
     Alliance nextPlayer;
+    Pawn enPassantPawn; 
     
     // Builder constructor
     public Builder(){
@@ -34,4 +36,7 @@ public class Builder {
         return boardConfig;
     }
 
+    public void setEnPassantPawn(Pawn enPassantPawn) {
+        this.enPassantPawn = enPassantPawn;
+    }
 }

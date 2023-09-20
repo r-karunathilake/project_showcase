@@ -77,4 +77,9 @@ public class King extends Piece{
         return BoardUtils.EIGHTH_COLUMN[currentPos] && (candidateOffset == -7 || candidateOffset == 1
                                                         || candidateOffset == 9);
     }
+
+    @Override
+    public King newPiece(final Move move) {
+       return new King(move.getDestinationCoordinate(), move.getMovedPiece().getPieceAlliance());
+    }
 }

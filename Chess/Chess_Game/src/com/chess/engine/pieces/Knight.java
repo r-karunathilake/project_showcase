@@ -88,4 +88,9 @@ public class Knight extends Piece{
         return BoardUtils.EIGHTH_COLUMN[currentPos] && (candidateOffset == -15 || candidateOffset == -6 
                                                         || candidateOffset == 10 || candidateOffset == 17);
     }
+
+    @Override
+    public Knight newPiece(final Move move) {
+       return new Knight(move.getDestinationCoordinate(), move.getMovedPiece().getPieceAlliance());
+    }
 }

@@ -9,12 +9,22 @@ public enum PieceType {
         public boolean isKing() {
             return false;
         }
+
+        @Override
+        public boolean isRook() {
+           return false;
+        }
     },
 
     KNIGHT("N"){
         @Override
         public boolean isKing() {
             return false;
+        }
+
+        @Override
+        public boolean isRook() {
+           return false;
         }
     },
 
@@ -23,12 +33,22 @@ public enum PieceType {
         public boolean isKing() {
             return false;
         }
+
+        @Override
+        public boolean isRook() {
+           return false;
+        }
     },
 
     ROOK("R") {
         @Override
         public boolean isKing() {
             return false;
+        }
+
+        @Override
+        public boolean isRook() {
+           return true;
         }
     },
 
@@ -37,12 +57,22 @@ public enum PieceType {
         public boolean isKing() {
             return false;
         }
+
+        @Override
+        public boolean isRook() {
+           return false;
+        }
     },
 
     KING("K"){
         @Override
         public boolean isKing() {
             return true;
+        }
+
+        @Override
+        public boolean isRook() {
+           return false;
         }
     };
 
@@ -56,5 +86,6 @@ public enum PieceType {
         return this.pieceName; 
     }
 
-    abstract public boolean isKing(); 
+    abstract public boolean isKing();
+    abstract public boolean isRook();
 }
