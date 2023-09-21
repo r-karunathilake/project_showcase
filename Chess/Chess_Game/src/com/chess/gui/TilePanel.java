@@ -20,14 +20,15 @@ public class TilePanel extends JPanel{
     private final int tileId;
     private final static Dimension TILE_PANEL_DIM = new Dimension(10, 10);
     private final static Color lightTileColor = Color.LIGHT_GRAY;
-    private final static Color darkTileColor = Color.BLACK;
+    private final static Color darkTileColor = new Color(51,153,255);;
 
     TilePanel(final BoardPanel boardPanel,
-              final int tileId){
+              final int tileId, final Board board){
         super(new GridBagLayout());
         this.tileId = tileId;
         setPreferredSize(TILE_PANEL_DIM);
         assignTileColor();
+        assignTilePieceIcon(board);
         validate(); 
     }
 

@@ -1,27 +1,24 @@
 package com.chess.gui;
 
-import javax.imageio.ImageIO;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.nio.file.Path;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Table {
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
+    private final Board chessBoard; 
 
     private final static Dimension FRAME_DIM = new Dimension(600, 600);
 
@@ -31,8 +28,8 @@ public class Table {
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(FRAME_DIM);
 
-        // Set the icon for the JFrame
-        ImageIcon iconImage = null;
+        // Create the standard chess board
+        this.chessBoard = Board.createInitialBoard(); 
 
         // Load the image from a file 
         setCustomWindowIcon(); 
@@ -41,7 +38,7 @@ public class Table {
         this.gameFrame.setJMenuBar(createTableMenuBar());
 
         // Create board panel
-        this.boardPanel = new BoardPanel(); 
+        this.boardPanel = new BoardPanel(this.chessBoard); 
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
     
         // Center the JFrame on the screen
