@@ -54,7 +54,7 @@ public class Board {
             builder.append(String.format("%3s", tileText));
 
             // End of current row reached
-            if((i + 1) % BoardUtils.NUM_TILES_PER_ROW == 0){
+            if((i + 1) % BoardUtils.NUM_TILES_PER_RANK == 0){
                 builder.append("\n");
             }
         }

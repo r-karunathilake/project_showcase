@@ -55,8 +55,8 @@ public class Pawn extends Piece{
 
             // If the pawn is moving forward by 2 and it's the first move
             else if(currentCandidateOffset == 16 && this.isFirstMove() && 
-                    ((BoardUtils.SECOND_ROW[this.piecePosition] && this.pieceAlliance.isBlack()) || 
-                     (BoardUtils.SEVENTH_ROW[this.piecePosition] && this.pieceAlliance.isWhite()))){
+                    ((BoardUtils.SEVENTH_RANK[this.piecePosition] && this.pieceAlliance.isBlack()) || 
+                     (BoardUtils.SEVENTH_RANK[this.piecePosition] && this.pieceAlliance.isWhite()))){
                 
                 // Calculate the position of the tile in front of the pawn based on the pawns alliance
                 final int behindCandidateDestinationCoordinate = this.piecePosition + (this.pieceAlliance.getDirection() * 8);
@@ -70,8 +70,8 @@ public class Pawn extends Piece{
             }
             // If the pawn is attacking diagonally forward 
             else if(currentCandidateOffset == 7 && // Valid diagonal right move ?
-                    !((BoardUtils.EIGHTH_COLUMN[this.piecePosition] && this.pieceAlliance.isWhite())||
-                     (BoardUtils.FIRST_COLUMN[this.piecePosition] && this.pieceAlliance.isBlack()))){  
+                    !((BoardUtils.EIGHTH_FILE[this.piecePosition] && this.pieceAlliance.isWhite())||
+                     (BoardUtils.FIRST_FILE[this.piecePosition] && this.pieceAlliance.isBlack()))){  
                     
                 final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                 
@@ -98,8 +98,8 @@ public class Pawn extends Piece{
                 }
             }
             else if(currentCandidateOffset == 9 && // Valid diagonal left move ?
-                    !((BoardUtils.FIRST_COLUMN[this.piecePosition] && this.pieceAlliance.isWhite())||
-                      (BoardUtils.EIGHTH_COLUMN[this.piecePosition] && this.pieceAlliance.isBlack()))){ 
+                    !((BoardUtils.FIRST_FILE[this.piecePosition] && this.pieceAlliance.isWhite())||
+                      (BoardUtils.EIGHTH_FILE[this.piecePosition] && this.pieceAlliance.isBlack()))){ 
                 
                         final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                 

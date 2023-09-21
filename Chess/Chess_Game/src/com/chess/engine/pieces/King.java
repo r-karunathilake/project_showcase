@@ -69,12 +69,12 @@ public class King extends Piece{
         return ImmutableList.copyOf(legalMoves);
     }
     private static boolean isFirstColumnExclusion(final int currentPos, final int candidateOffset){
-        return BoardUtils.FIRST_COLUMN[currentPos] && (candidateOffset == -9 || candidateOffset == -1 
+        return BoardUtils.FIRST_FILE[currentPos] && (candidateOffset == -9 || candidateOffset == -1 
                                                        || candidateOffset == 7);
     }
 
     private static boolean isEighthColumnExclusion(final int currentPos, final int candidateOffset){
-        return BoardUtils.EIGHTH_COLUMN[currentPos] && (candidateOffset == -7 || candidateOffset == 1
+        return BoardUtils.EIGHTH_FILE[currentPos] && (candidateOffset == -7 || candidateOffset == 1
                                                         || candidateOffset == 9);
     }
 

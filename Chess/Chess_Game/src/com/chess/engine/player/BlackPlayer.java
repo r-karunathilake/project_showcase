@@ -86,7 +86,6 @@ public class BlackPlayer extends Player{
                                                                     (Rook) rookTileExpected.getPiece(), 
                                                                     rookTileExpected.getTileCoordinate(), 
                                                                     3));
-            
                     }
                 }
             }
