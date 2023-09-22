@@ -26,7 +26,15 @@ public class Pawn extends Piece{
 
     // Pawn constructor 
     public Pawn(final int piecePosition, final Alliance pieceAlliance) {
-        super(PieceType.PAWN, piecePosition, pieceAlliance);
+        super(PieceType.PAWN, piecePosition, pieceAlliance, true);
+    }
+
+    // Pawn constructor override 
+    public Pawn(final Alliance pieceAlliance,
+                final int piecePosition,
+                final boolean isFirstMove){
+
+        super(PieceType.PAWN, piecePosition, pieceAlliance, isFirstMove);
     }
 
     @Override
@@ -56,7 +64,7 @@ public class Pawn extends Piece{
             // If the pawn is moving forward by 2 and it's the first move
             else if(currentCandidateOffset == 16 && this.isFirstMove() && 
                     ((BoardUtils.SEVENTH_RANK[this.piecePosition] && this.pieceAlliance.isBlack()) || 
-                     (BoardUtils.SEVENTH_RANK[this.piecePosition] && this.pieceAlliance.isWhite()))){
+                     (BoardUtils.SECOND_RANK[this.piecePosition] && this.pieceAlliance.isWhite()))){
                 
                 // Calculate the position of the tile in front of the pawn based on the pawns alliance
                 final int behindCandidateDestinationCoordinate = this.piecePosition + (this.pieceAlliance.getDirection() * 8);
@@ -76,24 +84,13 @@ public class Pawn extends Piece{
                 final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                 
                 // If the tile diagonally to the right of the pawn is NOT occupied
-                if(!candidateDestinationTile.isTileOccupied()){
-                    legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
-                }
-                else{// Tile is occupied and this is might be an attacking move 
+                if(candidateDestinationTile.isTileOccupied()){
+                    // Tile is occupied and this is might be an attacking move 
                     final Piece pieceAtCandidateDestination = candidateDestinationTile.getPiece();
-                    final Alliance pieceAlliance = pieceAtCandidateDestination.getPieceAlliance(); 
+                    final Alliance pieceAtDestinationAlliance = pieceAtCandidateDestination.getPieceAlliance();
                     
-                    // If the pawn alliance is NOT equal to the piece at candidate location,
-                    // found an enemy piece.  
-                    if(this.pieceAlliance != pieceAlliance){
-                        legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate,
-                                                      pieceAtCandidateDestination));
-                    }
-                    else{
-                        // There is a friendly chess piece on the right diagonal to the pawn.
-                        // This is not a valid move (can move diagonally only when attacking
-                        // opponent piece).
-                        continue;
+                    if(this.pieceAlliance != pieceAtDestinationAlliance){
+                        legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
                     }
                 }
             }
@@ -101,27 +98,16 @@ public class Pawn extends Piece{
                     !((BoardUtils.FIRST_FILE[this.piecePosition] && this.pieceAlliance.isWhite())||
                       (BoardUtils.EIGHTH_FILE[this.piecePosition] && this.pieceAlliance.isBlack()))){ 
                 
-                        final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
+                final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                 
-                // If the tile diagonally to the left of the pawn is NOT occupied
-                if(!candidateDestinationTile.isTileOccupied()){
-                    legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
-                }
-                else{// Tile is occupied and this is might be an attacking move 
+                // If the tile diagonally to the right of the pawn is NOT occupied
+                if(candidateDestinationTile.isTileOccupied()){
+                    // Tile is occupied and this is might be an attacking move 
                     final Piece pieceAtCandidateDestination = candidateDestinationTile.getPiece();
-                    final Alliance pieceAlliance = pieceAtCandidateDestination.getPieceAlliance(); 
+                    final Alliance pieceAtDestinationAlliance = pieceAtCandidateDestination.getPieceAlliance();
                     
-                    // If the pawn alliance is NOT equal to the piece at candidate location,
-                    // found an enemy piece.  
-                    if(this.pieceAlliance != pieceAlliance){
-                        legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate,
-                                                      pieceAtCandidateDestination));
-                    }
-                    else{
-                        // There is a friendly chess piece on the left diagonal to the pawn.
-                        // This is not a valid move (can move diagonally only when attacking
-                        // opponent piece).
-                        continue;
+                    if(this.pieceAlliance != pieceAtDestinationAlliance){
+                        legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
                     }
                 }
             }

@@ -22,7 +22,15 @@ public class King extends Piece{
 
     public King(final int piecePosition, 
                 final Alliance pieceAlliance) {
-        super(PieceType.KING, piecePosition, pieceAlliance);
+        super(PieceType.KING, piecePosition, pieceAlliance, true);
+    }
+
+    // King constructor override 
+    public King(final Alliance pieceAlliance,
+                final int piecePosition,
+                final boolean isFirstMove){
+
+        super(PieceType.KING, piecePosition, pieceAlliance, isFirstMove);
     }
 
     @Override
@@ -70,12 +78,12 @@ public class King extends Piece{
     }
     private static boolean isFirstColumnExclusion(final int currentPos, final int candidateOffset){
         return BoardUtils.FIRST_FILE[currentPos] && (candidateOffset == -9 || candidateOffset == -1 
-                                                       || candidateOffset == 7);
+                                                     || candidateOffset == 7);
     }
 
     private static boolean isEighthColumnExclusion(final int currentPos, final int candidateOffset){
         return BoardUtils.EIGHTH_FILE[currentPos] && (candidateOffset == -7 || candidateOffset == 1
-                                                        || candidateOffset == 9);
+                                                      || candidateOffset == 9);
     }
 
     @Override

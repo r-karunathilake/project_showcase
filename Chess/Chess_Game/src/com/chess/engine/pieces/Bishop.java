@@ -21,7 +21,15 @@ public class Bishop extends Piece{
     private final static int[] CANDIDATE_MOVE_VECTOR_OFFSETS = {-9, -7, 7, 9};
    
     public Bishop(final int piecePosition, final Alliance pieceAlliance) {
-        super(PieceType.BISHOP, piecePosition, pieceAlliance);
+        super(PieceType.BISHOP, piecePosition, pieceAlliance, true);
+    }
+    
+    // Bishop constructor override 
+    public Bishop(final Alliance pieceAlliance,
+        final int piecePosition,
+        final boolean isFirstMove){
+
+        super(PieceType.BISHOP, piecePosition, pieceAlliance, isFirstMove);
     }
 
     @Override
@@ -38,21 +46,23 @@ public class Bishop extends Piece{
             int candidateDestinationCoordinate = this.piecePosition;
 
             while(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
+                // Edge cases
+                if(isFirstColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset) 
+                   || isEighthColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset)){
+                    // This is not a valid candidate position when the bishop is
+                    // in any of these column on the chess board. 
+                    break;
+                }
+
                 // Update the candidate move coordinate position since
                 // the bishop is inside the chess board.
                 candidateDestinationCoordinate += currentCandidateOffset;
-
+                
                 // If the candidate position is inside the board 
                 if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
-                    // Edge cases
-                    if(isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) 
-                       || isEighthColumnExclusion(this.piecePosition, currentCandidateOffset)){
-                        // This is not a valid candidate position when the bishop is
-                        // in any of these column on the chess board. 
-                        continue;
-                    }
-                    final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
+                    final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
+    
                     // If the tile is not occupied, it a legal move
                     if(!candidateDestinationTile.isTileOccupied()){
                         legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
@@ -60,19 +70,15 @@ public class Bishop extends Piece{
                     // There is another piece at the candidate location 
                     else{
                         final Piece pieceAtCandidateDestination = candidateDestinationTile.getPiece();
-                        final Alliance pieceAlliance = pieceAtCandidateDestination.getPieceAlliance(); 
+                        final Alliance pieceDestinationAlliance = pieceAtCandidateDestination.getPieceAlliance(); 
                         
                         // If the bishop alliance is NOT equal to the piece at candidate location,
                         // found an enemy piece.  
-                        if(this.pieceAlliance != pieceAlliance){
+                        if(this.pieceAlliance != pieceDestinationAlliance){
                             legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate,
-                                                            pieceAtCandidateDestination));
+                                                          pieceAtCandidateDestination));
                         }
-                        // Break out of the while-loop as there are no more moves 
-                        // at this direction vector since the path is blocked by 
-                        // another piece. Note: this break occurs irrespective of the 
-                        // blocking piece allegiance.  
-                        break;
+                        break; 
                     }
                 }
             }

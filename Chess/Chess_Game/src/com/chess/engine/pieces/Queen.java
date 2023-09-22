@@ -22,7 +22,15 @@ public class Queen extends Piece{
 
     // Queen constructor
     public Queen(final int piecePosition, final Alliance pieceAlliance) {
-        super(PieceType.QUEEN, piecePosition, pieceAlliance);
+        super(PieceType.QUEEN, piecePosition, pieceAlliance, true);
+    }
+
+    // Queen constructor override 
+    public Queen(final Alliance pieceAlliance,
+                 final int piecePosition,
+                 final boolean isFirstMove){
+
+        super(PieceType.QUEEN, piecePosition, pieceAlliance, isFirstMove);
     }
 
     @Override
@@ -39,19 +47,19 @@ public class Queen extends Piece{
             int candidateDestinationCoordinate = this.piecePosition;
 
             while(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
+                // Edge cases
+                if(isFirstColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset) 
+                    || isEighthColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset)){
+                    // This is not a valid candidate position when the queen is
+                    // in any of these column on the chess board. 
+                    break;
+                }
                 // Update the candidate move coordinate position since
                 // the queen is inside the chess board.
                 candidateDestinationCoordinate += currentCandidateOffset;
 
                 // If the candidate position is inside the board 
                 if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
-                    // Edge cases
-                    if(isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) 
-                       || isEighthColumnExclusion(this.piecePosition, currentCandidateOffset)){
-                        // This is not a valid candidate position when the queen is
-                        // in any of these column on the chess board. 
-                        continue;
-                    }
                     final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
                     // If the tile is not occupied, it a legal move
