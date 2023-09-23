@@ -83,7 +83,7 @@ public class BoardUtils {
         return coordinate >= 0 && coordinate < 64;
     }
 
-    public static int getCoordinateAtPosition(final int position) {
+    public static int getCoordinateAtPosition(final String position) {
         return POS_TO_CORD.get(position);
     }
 

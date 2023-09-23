@@ -9,7 +9,6 @@ import com.chess.engine.PieceType;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Tile;
-import com.chess.engine.board.move.AttackMove;
 import com.chess.engine.board.move.MajorAttackMove;
 import com.chess.engine.board.move.Move;
 import com.chess.engine.board.move.NormalMove;

@@ -1,8 +1,5 @@
 package com.chess.engine.board.move;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.chess.engine.board.Board;
 
 public class MoveFactory {
