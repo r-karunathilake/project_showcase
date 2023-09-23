@@ -107,4 +107,8 @@ abstract public class Move {
         return this.getMovedPiece().getPiecePosition();
     }
 
+    public Board getBoard() {
+        return this.board; 
+    }
+
 }

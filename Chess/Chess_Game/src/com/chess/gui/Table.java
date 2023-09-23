@@ -368,7 +368,7 @@ public class Table {
         }
 
         private void assignTileColor() {
-            if(BoardUtils.EIGHT_RANK[this.tileId] || 
+            if(BoardUtils.EIGHTH_RANK[this.tileId] || 
             BoardUtils.SIXTH_RANK[this.tileId] ||
             BoardUtils.FOURTH_RANK[this.tileId] ||
             BoardUtils.SECOND_RANK[this.tileId]){

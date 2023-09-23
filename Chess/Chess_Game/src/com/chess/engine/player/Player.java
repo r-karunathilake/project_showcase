@@ -25,7 +25,7 @@ abstract public class Player {
         
         this.board = board;
         this.playerKing = findKing();
-        this.legalMoves = ImmutableList.copyOf(Iterables.concat(legalMoves, opponentMoves)); 
+        this.legalMoves = legalMoves; 
         // False, if there are no attacks currently on the chess tile containing the King piece
         this.isInCheck = !Player.calculateAttacksOnTile(this.playerKing.getPiecePosition(), opponentMoves).isEmpty();
     }

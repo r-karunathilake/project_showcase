@@ -14,7 +14,7 @@ public class BoardUtils {
     public static final boolean[] SEVENTH_FILE = initColumn(6);
     public static final boolean[] EIGHTH_FILE = initColumn(7);
 
-    public static final boolean[] EIGHT_RANK = initRow(0); // Tile ID that begins the row
+    public static final boolean[] EIGHTH_RANK = initRow(0); // Tile ID that begins the row
     public static final boolean[] SEVENTH_RANK = initRow(8);
     public static final boolean[] SIXTH_RANK = initRow(16);
     public static final boolean[] FIFTH_RANK = initRow(24); 

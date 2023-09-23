@@ -14,12 +14,9 @@ import com.chess.engine.board.move.PawnAttackMove;
 import com.chess.engine.board.move.PawnEnPassantAttack;
 import com.chess.engine.board.move.PawnJump;
 import com.chess.engine.board.move.PawnMove;
+import com.chess.engine.board.move.PawnPromotion;
 import com.google.common.collect.ImmutableList;
 
-    // TODO: pawns can be captured in an en passant move if moved 2 tiles forward.
-    // TODO: pawns may be promoted to any other piece (except a King) when reaching
-    //       the other side of the chess board.
-    
 public class Pawn extends Piece{
 
     // For a pawn, these are all the coordinate offsets for a given
@@ -58,8 +55,9 @@ public class Pawn extends Piece{
             
             // If the pawn is moving forward by 1 and the tile in front of it is NOT occupied.
             if(currentCandidateOffset == 8 && !board.getTile(candidateDestinationCoordinate).isTileOccupied()){
-                // TODO: pawns may be promoted to any other piece (except a King) when reaching
-                //       the other side of the chess board.
+                if(this.pieceAlliance.isPawnPromotionSquare(candidateDestinationCoordinate)){
+                    legalMoves.add(new PawnPromotion(new PawnMove(board, this, candidateDestinationCoordinate)));
+                }
                 legalMoves.add(new PawnMove(board, this, candidateDestinationCoordinate));
             }
 
@@ -92,8 +90,14 @@ public class Pawn extends Piece{
                     final Alliance pieceAtDestinationAlliance = pieceAtCandidateDestination.getPieceAlliance();
                     
                     if(this.pieceAlliance != pieceAtDestinationAlliance){
-                        legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
+                        if(this.pieceAlliance.isPawnPromotionSquare(candidateDestinationCoordinate)){
+                            legalMoves.add(new PawnPromotion(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
+                                                          pieceAtCandidateDestination)));
+                        }
+                        else{
+                            legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
                                                           pieceAtCandidateDestination));
+                        } 
                     }
                 }
                 else if (board.getEnPassantPawn() != null){ // Check if there is an en passant piece on the board
@@ -120,8 +124,14 @@ public class Pawn extends Piece{
                     final Alliance pieceAtDestinationAlliance = pieceAtCandidateDestination.getPieceAlliance();
                     
                     if(this.pieceAlliance != pieceAtDestinationAlliance){
-                        legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
-                                                          pieceAtCandidateDestination));
+                        if(this.pieceAlliance.isPawnPromotionSquare(candidateDestinationCoordinate)){
+                            legalMoves.add(new PawnPromotion(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
+                                                          pieceAtCandidateDestination)));
+                        }
+                        else{
+                            legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
+                                                              pieceAtCandidateDestination));
+                        }
                     }
                 }
                 else if (board.getEnPassantPawn() != null){ // Check if there is an en passant piece on the board
@@ -142,5 +152,10 @@ public class Pawn extends Piece{
     @Override
     public Pawn newPiece(final Move move) {
        return new Pawn(move.getDestinationCoordinate(), move.getMovedPiece().getPieceAlliance());
+    }
+
+    // Pawn promotion to Queen 
+    public Piece getPromotionPiece() {
+        return new Queen(this.pieceAlliance, this.piecePosition, false);
     }
 }
