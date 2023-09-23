@@ -4,7 +4,7 @@ all the difference types of chess pieces.*/
 
 public enum PieceType {
 
-    PAWN("P"){
+    PAWN("P", 100){
         @Override
         public boolean isKing() {
             return false;
@@ -16,7 +16,7 @@ public enum PieceType {
         }
     },
 
-    KNIGHT("N"){
+    KNIGHT("N", 300){
         @Override
         public boolean isKing() {
             return false;
@@ -28,7 +28,7 @@ public enum PieceType {
         }
     },
 
-    BISHOP("B"){
+    BISHOP("B", 300){
         @Override
         public boolean isKing() {
             return false;
@@ -40,7 +40,7 @@ public enum PieceType {
         }
     },
 
-    ROOK("R") {
+    ROOK("R", 500) {
         @Override
         public boolean isKing() {
             return false;
@@ -52,7 +52,7 @@ public enum PieceType {
         }
     },
 
-    QUEEN("Q"){
+    QUEEN("Q", 900){
         @Override
         public boolean isKing() {
             return false;
@@ -64,7 +64,7 @@ public enum PieceType {
         }
     },
 
-    KING("K"){
+    KING("K", 1000){
         @Override
         public boolean isKing() {
             return true;
@@ -77,8 +77,10 @@ public enum PieceType {
     };
 
     private String pieceName;
-    PieceType(final String pieceName){
+    private int pieceValue;
+    PieceType(final String pieceName, final int pieceValue){
         this.pieceName = pieceName; 
+        this.pieceValue = pieceValue;
     }
 
     @Override
@@ -88,4 +90,8 @@ public enum PieceType {
 
     abstract public boolean isKing();
     abstract public boolean isRook();
+
+    public int getPieceValue() {
+        return this.pieceValue;
+    }
 }

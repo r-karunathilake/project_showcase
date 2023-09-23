@@ -12,6 +12,8 @@ import com.chess.engine.board.Tile;
 import com.chess.engine.board.move.AttackMove;
 import com.chess.engine.board.move.Move;
 import com.chess.engine.board.move.NormalMove;
+import com.chess.engine.board.move.PawnAttackMove;
+import com.chess.engine.board.move.PawnJump;
 import com.google.common.collect.ImmutableList;
 
     // TODO: pawns can be captured in an en passant move if moved 2 tiles forward.
@@ -73,7 +75,7 @@ public class Pawn extends Piece{
                 if(!board.getTile(behindCandidateDestinationCoordinate).isTileOccupied() && 
                    !board.getTile(candidateDestinationCoordinate).isTileOccupied()){
 
-                    legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
+                    legalMoves.add(new PawnJump(board, this, candidateDestinationCoordinate));
                 }
             }
             // If the pawn is attacking diagonally forward 
@@ -90,7 +92,8 @@ public class Pawn extends Piece{
                     final Alliance pieceAtDestinationAlliance = pieceAtCandidateDestination.getPieceAlliance();
                     
                     if(this.pieceAlliance != pieceAtDestinationAlliance){
-                        legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
+                        legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
+                                                          pieceAtCandidateDestination));
                     }
                 }
             }
@@ -107,7 +110,8 @@ public class Pawn extends Piece{
                     final Alliance pieceAtDestinationAlliance = pieceAtCandidateDestination.getPieceAlliance();
                     
                     if(this.pieceAlliance != pieceAtDestinationAlliance){
-                        legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
+                        legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
+                                                          pieceAtCandidateDestination));
                     }
                 }
             }

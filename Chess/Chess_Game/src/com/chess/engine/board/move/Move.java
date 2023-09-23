@@ -7,16 +7,28 @@ import com.chess.engine.pieces.Piece;
 abstract public class Move {
     protected final Board board; 
     protected final Piece movedPiece;
-    private final int destinationCoordinate; 
+    protected final boolean isFirstMove; 
+    protected final int destinationCoordinate; 
+    
 
     public static final Move INVALID_MOVE = new InvalidMove(); 
 
-    protected Move(final Board board, 
+    public Move(final Board board, 
                    final Piece movedPiece,
                    final int destinationCoordinate){
             this.board = board;
             this.movedPiece = movedPiece;
-            this.destinationCoordinate = destinationCoordinate; 
+            this.destinationCoordinate = destinationCoordinate;
+            this.isFirstMove = movedPiece.isFirstMove();  
+    }
+
+    public Move(final Board board,
+                final int destinationCoordinate){
+        
+        this.board = board;
+        this.destinationCoordinate = destinationCoordinate;
+        this.movedPiece = null;
+        this.isFirstMove = false; 
     }
 
     @Override
@@ -25,6 +37,7 @@ abstract public class Move {
         int result = 7; // arbitrary non-zero constant integer 
         result = prime * result + this.destinationCoordinate;
         result = prime * result + movedPiece.hashCode();
+        result = prime * result + this.movedPiece.getPiecePosition();
         return result;
     }
 
@@ -43,7 +56,8 @@ abstract public class Move {
         // At this point, the 'other' object MUST be of class 'Piece'
         final Move otherMove = (Move) other; 
         return (getDestinationCoordinate() == otherMove.getDestinationCoordinate()) && 
-               (getMovedPiece().equals(otherMove.getMovedPiece()));
+               (getMovedPiece().equals(otherMove.getMovedPiece())) && 
+               (getCurrentCoordinate() == otherMove.getCurrentCoordinate());
     }
 
     public int getDestinationCoordinate() {

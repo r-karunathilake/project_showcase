@@ -82,4 +82,8 @@ abstract public class Piece {
     // Collection of legal moves for this chess piece 
     abstract public Collection<Move> calculateLegalMoves(final Board board);
     abstract public Piece newPiece(Move move);
+
+    public int getPieceValue() {
+        return this.pieceType.getPieceValue();
+    }
 }

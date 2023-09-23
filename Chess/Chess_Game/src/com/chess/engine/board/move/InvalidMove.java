@@ -5,7 +5,7 @@ import com.chess.engine.board.Board;
 public class InvalidMove extends Move{
 
     protected InvalidMove() {
-        super(null, null, -1);
+        super(null, -1);
     }
     
     @Override 

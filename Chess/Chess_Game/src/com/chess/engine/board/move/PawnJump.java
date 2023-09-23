@@ -1,12 +1,13 @@
 package com.chess.engine.board.move;
 
 import com.chess.engine.board.Board;
+import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Builder;
 import com.chess.engine.pieces.Pawn;
 import com.chess.engine.pieces.Piece;
 
 public class PawnJump extends Move{
-    protected PawnJump(Board board, Piece movedPiece, int destinationCoordinate) {
+    public PawnJump(Board board, Piece movedPiece, int destinationCoordinate) {
         super(board, movedPiece, destinationCoordinate);
     }
 
@@ -30,5 +31,10 @@ public class PawnJump extends Move{
         builder.nextPlayer(this.board.currentPlayer().getOpponent().getAlliance());
         
         return builder.build();
+    }
+
+    @Override
+    public String toString(){
+        return BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
     }
 }

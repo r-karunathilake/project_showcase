@@ -40,6 +40,10 @@ import com.chess.engine.player.MoveTransition;
 
 public class Table {
     private final JFrame gameFrame;
+    private final GameHistoryPanel historyPanel;
+    private final CapturedPiecesPanel capturePanel;
+    private final MoveLog moveLog;
+
 
     private final static Dimension BOARD_PANEL_DIM = new Dimension(400, 350);
     private final static Dimension FRAME_DIM = new Dimension(600, 600);
@@ -61,6 +65,10 @@ public class Table {
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(FRAME_DIM);
 
+        // Create the game history and capture panels 
+        this.historyPanel = new GameHistoryPanel();
+        this.capturePanel = new CapturedPiecesPanel(); 
+
         // Load the image from a file 
         setCustomWindowIcon(); 
 
@@ -69,11 +77,15 @@ public class Table {
         this.boardDirection = BoardDirection.NORMAL; 
         this.showLegalMoves = false; // Highlight moves false
         this.boardPanel = new BoardPanel(); // Create board panel
+        this.moveLog = new MoveLog();
 
-        // Create menu 
+        // Create main window
         this.gameFrame.setJMenuBar(createTableMenuBar());
-        this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
     
+        this.gameFrame.add(this.capturePanel, BorderLayout.WEST);
+        this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
+        this.gameFrame.add(this.historyPanel, BorderLayout.EAST); 
+
         // Center the JFrame on the screen
         this.gameFrame.setLocationRelativeTo(null);
         this.gameFrame.setVisible(true);
@@ -184,6 +196,43 @@ public class Table {
             repaint();
         }
     }
+
+    // Create a log of all the moves executed on the chess board
+    public static class MoveLog{
+        private final List<Move> moves;
+
+        MoveLog(){
+            this.moves = new ArrayList<>();
+        }
+
+        public List<Move> getMoves(){
+            return this.moves;
+        }
+
+        public void addMove(final Move move){
+            this.moves.add(move);
+        }
+
+        public int size(){
+            return this.moves.size();
+        }
+
+        public void clear(){
+            this.moves.clear(); 
+        }
+
+        public boolean removeMove(final Move move){
+            return this.moves.remove(move);
+        }
+
+        public Move removeMove(int index){
+            return this.moves.remove(index);
+        }
+    }
+
+
+
+
     public class TilePanel extends JPanel{
         private final int tileId;
 
@@ -198,6 +247,7 @@ public class Table {
             highlightLegalMoves(chessBoard); 
 
             addMouseListener(new MouseListener(){
+
                 @Override
                 public void mouseClicked(final MouseEvent e) { 
                     // Cancel selection if user right click on the mouse
@@ -223,12 +273,14 @@ public class Table {
                             final MoveTransition transition = chessBoard.currentPlayer().makeMove(move); 
                             if(transition.getMoveStatus().isDone()){
                                 chessBoard = transition.getTransitionBoard();
-                                // TODO: add the move to the move log 
+                                moveLog.addMove(move);  
                             }
                             // Clear tile state after executing move
                             clearTileState();
                         }
                         SwingUtilities.invokeLater(() ->{
+                            historyPanel.redo(chessBoard, moveLog);
+                            capturePanel.redo(moveLog);
                             boardPanel.drawBoard(chessBoard);
                         });
                     }
