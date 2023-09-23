@@ -6,7 +6,6 @@ import com.chess.engine.Alliance;
 import com.chess.engine.PieceType;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.move.Move;
-import com.chess.engine.board.move.PawnJump;
 
 abstract public class Piece {
     protected final PieceType pieceType;

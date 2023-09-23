@@ -10,6 +10,7 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Tile;
 import com.chess.engine.board.move.AttackMove;
+import com.chess.engine.board.move.MajorAttackMove;
 import com.chess.engine.board.move.Move;
 import com.chess.engine.board.move.NormalMove;
 import com.google.common.collect.ImmutableList;
@@ -75,8 +76,8 @@ public class Bishop extends Piece{
                         // If the bishop alliance is NOT equal to the piece at candidate location,
                         // found an enemy piece.  
                         if(this.pieceAlliance != pieceDestinationAlliance){
-                            legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate,
-                                                          pieceAtCandidateDestination));
+                            legalMoves.add(new MajorAttackMove(board, this, candidateDestinationCoordinate,
+                                                               pieceAtCandidateDestination));
                         }
                         break; 
                     }

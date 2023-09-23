@@ -9,11 +9,11 @@ import com.chess.engine.PieceType;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Tile;
-import com.chess.engine.board.move.AttackMove;
 import com.chess.engine.board.move.Move;
-import com.chess.engine.board.move.NormalMove;
 import com.chess.engine.board.move.PawnAttackMove;
+import com.chess.engine.board.move.PawnEnPassantAttack;
 import com.chess.engine.board.move.PawnJump;
+import com.chess.engine.board.move.PawnMove;
 import com.google.common.collect.ImmutableList;
 
     // TODO: pawns can be captured in an en passant move if moved 2 tiles forward.
@@ -60,7 +60,7 @@ public class Pawn extends Piece{
             if(currentCandidateOffset == 8 && !board.getTile(candidateDestinationCoordinate).isTileOccupied()){
                 // TODO: pawns may be promoted to any other piece (except a King) when reaching
                 //       the other side of the chess board.
-                legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
+                legalMoves.add(new PawnMove(board, this, candidateDestinationCoordinate));
             }
 
             // If the pawn is moving forward by 2 and it's the first move
@@ -85,7 +85,7 @@ public class Pawn extends Piece{
                     
                 final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                 
-                // If the tile diagonally to the right of the pawn is NOT occupied
+                // If the tile diagonally to the right of the pawn is occupied
                 if(candidateDestinationTile.isTileOccupied()){
                     // Tile is occupied and this is might be an attacking move 
                     final Piece pieceAtCandidateDestination = candidateDestinationTile.getPiece();
@@ -96,6 +96,16 @@ public class Pawn extends Piece{
                                                           pieceAtCandidateDestination));
                     }
                 }
+                else if (board.getEnPassantPawn() != null){ // Check if there is an en passant piece on the board
+                    // Is the en passant pawn from the opponent to the right of the current player pawn?
+                    if(board.getEnPassantPawn().getPiecePosition() == (this.piecePosition + this.pieceAlliance.getOppositeDirection())){
+                        final Piece enPassantPawn = board.getEnPassantPawn();
+
+                        if(this.pieceAlliance != enPassantPawn.getPieceAlliance()){
+                            legalMoves.add(new PawnEnPassantAttack(board, this, candidateDestinationCoordinate, enPassantPawn));
+                        }
+                    }
+                }
             }
             else if(currentCandidateOffset == 9 && // Valid diagonal left move ?
                     !((BoardUtils.FIRST_FILE[this.piecePosition] && this.pieceAlliance.isWhite())||
@@ -103,7 +113,7 @@ public class Pawn extends Piece{
                 
                 final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                 
-                // If the tile diagonally to the right of the pawn is NOT occupied
+                // If the tile diagonally to the right of the pawn is occupied
                 if(candidateDestinationTile.isTileOccupied()){
                     // Tile is occupied and this is might be an attacking move 
                     final Piece pieceAtCandidateDestination = candidateDestinationTile.getPiece();
@@ -112,6 +122,16 @@ public class Pawn extends Piece{
                     if(this.pieceAlliance != pieceAtDestinationAlliance){
                         legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, 
                                                           pieceAtCandidateDestination));
+                    }
+                }
+                else if (board.getEnPassantPawn() != null){ // Check if there is an en passant piece on the board
+                    // Is the en passant pawn from the opponent to the left of the current player pawn?
+                    if(board.getEnPassantPawn().getPiecePosition() == (this.piecePosition - this.pieceAlliance.getOppositeDirection())){
+                        final Piece enPassantPawn = board.getEnPassantPawn();
+
+                        if(this.pieceAlliance != enPassantPawn.getPieceAlliance()){
+                            legalMoves.add(new PawnEnPassantAttack(board, this, candidateDestinationCoordinate, enPassantPawn));
+                        }
                     }
                 }
             }

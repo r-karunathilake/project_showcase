@@ -29,10 +29,13 @@ public class Board {
     private final WhitePlayer whitePlayer;
     private final BlackPlayer blackPlayer;
     private final Player currentPlayer;
+    private final Pawn enPassantPawn; 
 
     // Board constructor
     Board(final Builder builder){
         this.gameBoard = createGameBoard(builder);
+        // This line MUST be above the 'calculateActivePieces'
+        this.enPassantPawn = builder.enPassantPawn; 
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
         
@@ -166,5 +169,9 @@ public class Board {
 
     public Iterable<Move> getAllLegalMoves() {
         return Iterables.unmodifiableIterable(Iterables.concat(this.whitePlayer.getLegalMoves(), this.blackPlayer.getLegalMoves()));
+    }
+
+    public Pawn getEnPassantPawn() {
+        return this.enPassantPawn;
     }
 }

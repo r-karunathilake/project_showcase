@@ -33,12 +33,6 @@ public class AttackMove extends Move{
     }
 
     @Override
-    public Board execute() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
-    }
-
-    @Override
     public boolean isAttack(){
         return true; 
     }

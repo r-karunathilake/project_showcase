@@ -1,5 +1,8 @@
 package com.chess.engine.board.move;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.chess.engine.board.Board;
 
 public class MoveFactory {
@@ -10,7 +13,7 @@ public class MoveFactory {
     public static Move createMove(final Board board, 
                                   final int currentCoordinate,
                                   final int destinationCoordinate){
-        
+         
         for(final Move move : board.getAllLegalMoves()){
             if(move.getCurrentCoordinate() == currentCoordinate &&
                move.getDestinationCoordinate() == destinationCoordinate){

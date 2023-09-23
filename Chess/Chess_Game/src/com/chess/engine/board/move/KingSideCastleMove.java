@@ -11,6 +11,12 @@ public class KingSideCastleMove extends CastleMove{
                                  int castleRookStart, int castleRookDestination) {
         super(board, movedPiece, destinationCoordinate, castleRook, castleRookStart, castleRookDestination);
     }
+
+    @Override
+    public boolean equals(final Object other){
+        return this == other || (other instanceof KingSideCastleMove 
+                                 && super.equals(other));
+    }
     
     @Override
     public String toString(){

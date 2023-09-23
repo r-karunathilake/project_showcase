@@ -7,7 +7,9 @@ import com.chess.engine.pieces.Pawn;
 import com.chess.engine.pieces.Piece;
 
 public class PawnJump extends Move{
-    public PawnJump(Board board, Piece movedPiece, int destinationCoordinate) {
+    public PawnJump(Board board, 
+                    Piece movedPiece, 
+                    int destinationCoordinate) {
         super(board, movedPiece, destinationCoordinate);
     }
 
@@ -27,7 +29,8 @@ public class PawnJump extends Move{
 
         final Pawn movedPawn = (Pawn) this.movedPiece.newPiece(this); 
         builder.setPiece(movedPawn);
-        builder.setEnPassantPawn(movedPawn);
+        // This will help us check if this piece was attacked as en passant 
+        builder.setEnPassantPawn(movedPawn); 
         builder.nextPlayer(this.board.currentPlayer().getOpponent().getAlliance());
         
         return builder.build();

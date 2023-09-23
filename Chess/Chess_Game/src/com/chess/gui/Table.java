@@ -48,8 +48,8 @@ public class Table {
     private final static Dimension BOARD_PANEL_DIM = new Dimension(400, 350);
     private final static Dimension FRAME_DIM = new Dimension(600, 600);
     private final static Dimension TILE_PANEL_DIM = new Dimension(10, 10); 
-    private final static Color lightTileColor = Color.LIGHT_GRAY;
-    private final static Color darkTileColor = new Color(51,153,255);
+    private final static Color lightTileColor = Color.decode("0xcccccc");
+    private final static Color darkTileColor = Color.decode("0x0086b3");
 
     private final BoardPanel boardPanel;
     private Board chessBoard;
@@ -268,8 +268,8 @@ public class Table {
                         else{
                             destinationTile = chessBoard.getTile(tileId);
                             final Move move = MoveFactory.createMove(chessBoard, 
-                                                                    sourceTile.getTileCoordinate(), 
-                                                                    destinationTile.getTileCoordinate()); 
+                                                                     sourceTile.getTileCoordinate(), 
+                                                                     destinationTile.getTileCoordinate()); 
                             final MoveTransition transition = chessBoard.currentPlayer().makeMove(move); 
                             if(transition.getMoveStatus().isDone()){
                                 chessBoard = transition.getTransitionBoard();
@@ -342,7 +342,6 @@ public class Table {
         private Collection<Move> pieceLegalMoves(final Board board) {
             if(humanMovedPiece != null && 
             humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()){
-                
                 return humanMovedPiece.calculateLegalMoves(board);
             }
             return Collections.emptyList(); 

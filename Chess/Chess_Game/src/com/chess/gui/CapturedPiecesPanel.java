@@ -30,17 +30,16 @@ public class CapturedPiecesPanel extends JPanel{
     private final JPanel southPanel;
 
     private static final EtchedBorder PANEL_BORDER = new EtchedBorder(EtchedBorder.RAISED);
-    private static final Color PANEL_COLOR = Color.RED;
     private static final Dimension PIECE_DIMS = new Dimension(75, 80);
 
     public CapturedPiecesPanel(){
         super(new BorderLayout());
-        setBackground(Color.decode("0xccd9ff"));
+        setBackground(Color.decode("0xe8daef"));
         setBorder(PANEL_BORDER);
         this.northPanel = new JPanel(new GridLayout(8, 2));
         this.southPanel = new JPanel(new GridLayout(8, 2));
-        this.northPanel.setBackground(PANEL_COLOR);
-        this.southPanel.setBackground(PANEL_COLOR);
+        this.northPanel.setBackground(Color.decode("0xec7063"));
+        this.southPanel.setBackground(Color.decode("0x48c9b0"));
         this.add(this.northPanel, BorderLayout.NORTH);
         this.add(this.southPanel, BorderLayout.SOUTH);
         setPreferredSize(PIECE_DIMS);

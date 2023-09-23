@@ -10,6 +10,7 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Tile;
 import com.chess.engine.board.move.AttackMove;
+import com.chess.engine.board.move.MajorAttackMove;
 import com.chess.engine.board.move.Move;
 import com.chess.engine.board.move.NormalMove;
 import com.google.common.collect.ImmutableList;
@@ -74,8 +75,8 @@ public class Queen extends Piece{
                         // If the queen alliance is NOT equal to the piece at candidate location,
                         // found an enemy piece.  
                         if(this.pieceAlliance != pieceAlliance){
-                            legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate,
-                                                            pieceAtCandidateDestination));
+                            legalMoves.add(new MajorAttackMove(board, this, candidateDestinationCoordinate,
+                                                               pieceAtCandidateDestination));
                         }
                         // Break out of the while-loop as there are no more moves 
                         // at this direction vector since the path is blocked by 
