@@ -11,7 +11,6 @@ import com.chess.engine.board.move.Move;
 import com.chess.engine.pieces.King;
 import com.chess.engine.pieces.Piece;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 
 abstract public class Player {
     protected final Board board;

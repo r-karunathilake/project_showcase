@@ -171,4 +171,8 @@ public class Board {
     public Pawn getEnPassantPawn() {
         return this.enPassantPawn;
     }
+
+    public Iterable<Piece> getAllPieces() {
+        return Iterables.unmodifiableIterable(Iterables.concat(whitePieces, blackPieces));
+    }
 }

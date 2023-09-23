@@ -26,8 +26,8 @@ public class King extends Piece{
     }
 
     // King constructor override 
-    public King(final Alliance pieceAlliance,
-                final int piecePosition,
+    public King(final int piecePosition, 
+                final Alliance pieceAlliance, 
                 final boolean isFirstMove){
 
         super(PieceType.KING, piecePosition, pieceAlliance, isFirstMove);

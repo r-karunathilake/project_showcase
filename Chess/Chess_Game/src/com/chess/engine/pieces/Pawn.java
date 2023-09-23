@@ -29,8 +29,8 @@ public class Pawn extends Piece{
     }
 
     // Pawn constructor override 
-    public Pawn(final Alliance pieceAlliance,
-                final int piecePosition,
+    public Pawn(final int piecePosition, 
+                final Alliance pieceAlliance,
                 final boolean isFirstMove){
 
         super(PieceType.PAWN, piecePosition, pieceAlliance, isFirstMove);
