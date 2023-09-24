@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -389,7 +390,7 @@ public class PieceTest {
         assertEquals(whiteLegalMoves.size(), 13 + 5);
         assertEquals(blackLegalMoves.size(), 5);
 
-        // Create a hashmap of all possible moves for the white knight
+        // Create a hashmap of all possible moves for the bishop
         Map<String, String> whiteBishopLegalMoves = new HashMap<>(); 
 
         // Add moves (source coordinate: destination coordinate) to HashMap
@@ -441,7 +442,7 @@ public class PieceTest {
         assertEquals(whiteLegalMoves.size(), 7 + 5);
         assertEquals(blackLegalMoves.size(), 5);
 
-        // Create a hashmap of all possible moves for the white knight
+        // Create a hashmap of all possible moves for the bishop
         Map<String, String> whiteBishopLegalMoves = new HashMap<>(); 
 
         // Add moves (source coordinate: destination coordinate) to HashMap
@@ -487,7 +488,7 @@ public class PieceTest {
         assertEquals(whiteLegalMoves.size(), 13 + 5);
         assertEquals(blackLegalMoves.size(), 5);
     
-        // Create a hashmap of all possible moves for the white knight
+        // Create a hashmap of all possible moves for the rook
         Map<String, String> whiteBishopLegalMoves = new HashMap<>(); 
 
         // Add moves (source coordinate: destination coordinate) to HashMap
@@ -522,6 +523,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
+        // King here are not in their normal position, because they will be in check after promotion. Thus,
+        // can't test the other player promotion. 
         builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e2"), Alliance.WHITE, true));
         builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e7"), Alliance.BLACK, true));
 
@@ -560,5 +563,55 @@ public class PieceTest {
         // Check that both pieces were promoted
         assertEquals(transitionBlack.getTransitionBoard().getTile(BoardUtils.getCoordinateAtPosition("h8")).getPiece().getPieceType(), PieceType.QUEEN);
         assertEquals(transitionBlack.getTransitionBoard().getTile(BoardUtils.getCoordinateAtPosition("h1")).getPiece().getPieceType(), PieceType.QUEEN);
+    }
+
+    @Test
+    public void testEnPassant(){
+        final Builder builder = new Builder();
+
+        // Need to add King for both sides to create a valid board 
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+
+         // Add white and black pawn
+        builder.setPiece(new Pawn(BoardUtils.getCoordinateAtPosition("d7"), Alliance.BLACK, true));
+        builder.setPiece(new Pawn(BoardUtils.getCoordinateAtPosition("e2"), Alliance.WHITE, true));
+
+        // Set current player 
+        builder.nextPlayer(Alliance.WHITE);
+
+        final Board testBoard = builder.build();
+
+        final Collection<Move> whiteLegalMoves = testBoard.whitePlayer().getLegalMoves(); 
+        final Collection<Move> blackLegalMoves = testBoard.blackPlayer().getLegalMoves();
+    
+        assertEquals(whiteLegalMoves.size(), 2 + 4);
+        assertEquals(blackLegalMoves.size(), 2 + 4);
+
+         // Create a hashmap of all possible moves for the white knight
+        Map<String, String> whiteBishopLegalMoves = new LinkedHashMap<>(); 
+
+        // Add moves (source coordinate: destination coordinate) to HashMap
+        //---------------------------------------------------------------
+        whiteBishopLegalMoves.put("e2", "e4");
+        whiteBishopLegalMoves.put("e8", "d8");
+        whiteBishopLegalMoves.put("e4", "e5");
+        whiteBishopLegalMoves.put("d7", "d5");
+        whiteBishopLegalMoves.put("e5", "d6");
+
+        Board newBoard = testBoard; 
+        for(Map.Entry<String, String> move : whiteBishopLegalMoves.entrySet()){
+            String sourceCord = move.getKey();
+            String destCord = move.getValue();
+
+            final Move newMove = MoveFactory.createMove(newBoard, 
+                                                        BoardUtils.getCoordinateAtPosition(sourceCord), 
+                                                        BoardUtils.getCoordinateAtPosition(destCord));
+
+            final MoveTransition transition = newBoard.currentPlayer().makeMove(newMove);
+            assertTrue(transition.getMoveStatus().isDone());
+            newBoard = transition.getTransitionBoard(); 
+            System.out.println("Success!");
+        }
     }
 }
