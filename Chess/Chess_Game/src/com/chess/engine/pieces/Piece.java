@@ -26,16 +26,6 @@ abstract public class Piece {
         this.cachedHashCode = computeHashCode();
     }
 
-    private int computeHashCode() {
-        final int prime = 31;
-        int result = 7; // arbitrary non-zero constant integer 
-        result += pieceType.hashCode();
-        result = prime * result + pieceAlliance.hashCode();
-        result = prime * piecePosition;
-        result = prime * result + (isFirstMove ? 1 : 0);
-        return result;
-    }
-
     // Object equality behavior 
     @Override
     public boolean equals(final Object other){
@@ -61,28 +51,38 @@ abstract public class Piece {
         return this.cachedHashCode;
     }
 
-
     public Alliance getPieceAlliance(){
         return this.pieceAlliance;
     }
 
+
     public boolean isFirstMove(){
         return this.isFirstMove; 
     }
-        
+
     public Integer getPiecePosition() {
         return this.piecePosition;
     }
-
+        
     public PieceType getPieceType() {
         return this.pieceType;
     }
 
     // Collection of legal moves for this chess piece 
     abstract public Collection<Move> calculateLegalMoves(final Board board);
-    abstract public Piece newPiece(Move move);
 
+    abstract public Piece newPiece(Move move);
     public int getPieceValue() {
         return this.pieceType.getPieceValue();
+    }
+
+    private int computeHashCode() {
+        final int prime = 31;
+        int result = 7; // arbitrary non-zero constant integer 
+        result += pieceType.hashCode();
+        result = prime * result + pieceAlliance.hashCode();
+        result = prime * piecePosition;
+        result = prime * result + (isFirstMove ? 1 : 0);
+        return result;
     }
 }

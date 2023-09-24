@@ -26,8 +26,8 @@ public class Queen extends Piece{
     }
 
     // Queen constructor override 
-    public Queen(final Alliance pieceAlliance,
-                 final int piecePosition,
+    public Queen(final int piecePosition,
+                 final Alliance pieceAlliance,
                  final boolean isFirstMove){
 
         super(PieceType.QUEEN, piecePosition, pieceAlliance, isFirstMove);

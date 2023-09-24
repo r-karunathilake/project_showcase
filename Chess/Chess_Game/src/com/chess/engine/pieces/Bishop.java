@@ -25,8 +25,8 @@ public class Bishop extends Piece{
     }
     
     // Bishop constructor override 
-    public Bishop(final Alliance pieceAlliance,
-        final int piecePosition,
+    public Bishop(final int piecePosition,
+        final Alliance pieceAlliance,
         final boolean isFirstMove){
 
         super(PieceType.BISHOP, piecePosition, pieceAlliance, isFirstMove);

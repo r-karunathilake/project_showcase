@@ -22,7 +22,7 @@ import com.chess.engine.pieces.Rook;
 import com.chess.engine.player.MoveTransition;
 import com.google.common.collect.Iterables;
 
-public class TestBoard {
+public class BoardTest {
     @Test
     public void testCreateInitialBoard() {
         final Board iniBoard = Board.createInitialBoard(); 
@@ -175,7 +175,7 @@ public class TestBoard {
     }
 
     @Test
-    public void testBoardConsistency() {
+    public void testBoardState() {
         final Board board = Board.createInitialBoard();
         assertEquals(board.currentPlayer(), board.whitePlayer());
 

@@ -58,7 +58,9 @@ public class Pawn extends Piece{
                 if(this.pieceAlliance.isPawnPromotionSquare(candidateDestinationCoordinate)){
                     legalMoves.add(new PawnPromotion(new PawnMove(board, this, candidateDestinationCoordinate)));
                 }
-                legalMoves.add(new PawnMove(board, this, candidateDestinationCoordinate));
+                else{
+                    legalMoves.add(new PawnMove(board, this, candidateDestinationCoordinate));
+                }
             }
 
             // If the pawn is moving forward by 2 and it's the first move
@@ -156,6 +158,6 @@ public class Pawn extends Piece{
 
     // Pawn promotion to Queen 
     public Piece getPromotionPiece() {
-        return new Queen(this.pieceAlliance, this.piecePosition, false);
+        return new Queen(this.piecePosition, this.pieceAlliance, false);
     }
 }

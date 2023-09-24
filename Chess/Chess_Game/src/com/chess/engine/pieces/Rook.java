@@ -25,8 +25,8 @@ public class Rook extends Piece{
     }
 
     // Rook constructor override 
-    public Rook(final Alliance pieceAlliance,
-                final int piecePosition,
+    public Rook(final int piecePosition,
+                final Alliance pieceAlliance,
                 final boolean isFirstMove){
     
         super(PieceType.ROOK, piecePosition, pieceAlliance, isFirstMove);
@@ -46,24 +46,32 @@ public class Rook extends Piece{
             int candidateDestinationCoordinate = this.piecePosition;
 
             while(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
+                // Edge cases
+                if(isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) 
+                    || isEighthColumnExclusion(this.piecePosition, currentCandidateOffset)){
+                    // This is not a valid candidate position when the rook is
+                    // in any of these column on the chess board. 
+                    break;
+                }
+
                 // Update the candidate move coordinate position since
                 // the rook is inside the chess board.
                 candidateDestinationCoordinate += currentCandidateOffset;
 
                 // If the candidate position is inside the board 
                 if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)){
-                    // Edge cases
-                    if(isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) 
-                        || isEighthColumnExclusion(this.piecePosition, currentCandidateOffset)){
-                        // This is not a valid candidate position when the rook is
-                        // in any of these column on the chess board. 
-                        continue;
-                    }
                     final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
                     // If the tile is not occupied, it a legal move
                     if(!candidateDestinationTile.isTileOccupied()){
                         legalMoves.add(new NormalMove(board, this, candidateDestinationCoordinate));
+                        // We need to stop looking for legal moves horizontally when we reach
+                        // the edge of the chess board. 
+                        if((currentCandidateOffset == 1 || currentCandidateOffset == -1) && 
+                           (BoardUtils.FIRST_FILE[candidateDestinationCoordinate] || 
+                            BoardUtils.EIGHTH_FILE[candidateDestinationCoordinate])){
+                            break; 
+                        }
                     }
                     // There is another piece at the candidate location 
                     else{
@@ -75,6 +83,13 @@ public class Rook extends Piece{
                         if(this.pieceAlliance != pieceAlliance){
                             legalMoves.add(new MajorAttackMove(board, this, candidateDestinationCoordinate,
                                                                pieceAtCandidateDestination));
+                            // We need to stop looking for legal moves horizontally when we reach
+                            // the edge of the chess board. 
+                            if((currentCandidateOffset == 1 || currentCandidateOffset == -1) && 
+                               (BoardUtils.FIRST_FILE[candidateDestinationCoordinate] || 
+                                BoardUtils.EIGHTH_FILE[candidateDestinationCoordinate])){
+                                break; 
+                            }
                         }
                         // Break out of the while-loop as there are no more moves 
                         // at this direction vector since the path is blocked by 
