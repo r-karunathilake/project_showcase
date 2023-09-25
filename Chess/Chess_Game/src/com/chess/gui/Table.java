@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -28,6 +29,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import com.chess.engine.BoardDirection;
 import com.chess.engine.board.Board;
@@ -60,6 +64,7 @@ public class Table {
     private Piece humanMovedPiece;
     private BoardDirection boardDirection; 
     private boolean showLegalMoves;
+    private int selectedTileId; 
 
     public Table(){
         // Main window 
@@ -191,11 +196,18 @@ public class Table {
         public void drawBoard(final Board board) {
             removeAll();
             for(final TilePanel tilePanel : boardDirection.traverse(boardTiles)){
+                if(tilePanel.getTileId() != selectedTileId){
+                    tilePanel.clearSelected(); 
+                }
                 tilePanel.drawTile(board);
                 add(tilePanel);
             }
             validate();
             repaint();
+        }
+
+        public TilePanel getPanel(int tileId){
+            return boardTiles.get(tileId); 
         }
     }
 
@@ -233,15 +245,16 @@ public class Table {
     }
 
 
-
-
     public class TilePanel extends JPanel{
         private final int tileId;
+        private boolean isSelected;
+        private List<JLabel> moveHighlightIcons= new ArrayList<>(); 
 
         TilePanel(final BoardPanel boardPanel,
-                final int tileId){
+                  final int tileId){
             super(new GridBagLayout());
             this.tileId = tileId;
+            this.isSelected = false; 
 
             setPreferredSize(TILE_PANEL_DIM);
             assignTileColor();
@@ -256,7 +269,11 @@ public class Table {
                     if(SwingUtilities.isRightMouseButton(e)){
                         clearTileState();
                     }
-                    else if(SwingUtilities.isLeftMouseButton(e)){
+                    SwingUtilities.invokeLater(() ->{
+                            boardPanel.drawBoard(chessBoard);
+                    });
+
+                    if(SwingUtilities.isLeftMouseButton(e)){
                         if(sourceTile == null){
                             sourceTile = chessBoard.getTile(tileId);
                             humanMovedPiece = sourceTile.getPiece();
@@ -265,7 +282,10 @@ public class Table {
                             if(humanMovedPiece == null){
                                 // Nullify the previous 'sourceTile' initialization
                                 sourceTile = null;
+                                isSelected = false; 
                             }
+                            isSelected = true;
+                            selectedTileId = tileId; 
                         }
                         else{
                             destinationTile = chessBoard.getTile(tileId);
@@ -311,10 +331,15 @@ public class Table {
             }); 
             validate(); 
         }
+        public int getTileId() {
+            return this.tileId;
+        }
         private void clearTileState(){
             sourceTile = null;
             destinationTile = null;
             humanMovedPiece = null;
+            isSelected = false; 
+            selectedTileId = -1; 
         }
 
         private void highlightLegalMoves(final Board board){
@@ -329,8 +354,10 @@ public class Table {
                             if (iconPath.toFile().exists()) {
                                 // Create an ImageIcon from the icon image file
                                 ImageIcon icon = new ImageIcon(iconPath.toString());
-
-                                add(new JLabel(icon));
+                                JLabel pathLabel = new JLabel(icon);
+                                // Keep a list labels added for removal later
+                                moveHighlightIcons.add(pathLabel); 
+                                add(pathLabel);
                             }
                         }
                         catch(Exception e){
@@ -392,12 +419,37 @@ public class Table {
                 setBackground(this.tileId % 2 == 0 ? darkTileColor : lightTileColor);
             }
         }
+
+        private void highlightTileBorder(){
+            if(isSelected){
+                // Set the border for the JPanel
+                this.setBorder(BorderFactory.createLineBorder(Color.RED)); 
+            }
+            else{
+                 // Set the border for the JPanel
+                this.setBorder(new EmptyBorder(0, 0, 0, 0)); 
+            }
+        }
+
+        private void clearhighlightLegalMoves(){
+            if(showLegalMoves && !isSelected){
+               for(JLabel label : moveHighlightIcons){
+                    this.remove(label);
+               }
+            }
+        }
+
         public void drawTile(final Board board) {
             assignTileColor();
             assignTilePieceIcon(board);
             highlightLegalMoves(board);
+            highlightTileBorder();
             validate();
             repaint(); 
+        }
+
+        public void clearSelected(){
+            this.isSelected = false;
         }
     }
 }
