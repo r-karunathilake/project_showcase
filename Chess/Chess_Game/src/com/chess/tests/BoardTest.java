@@ -260,9 +260,9 @@ public class BoardTest {
     private static int calculatedActivesFor(final Board board, final Alliance alliance) {
         int count = 0;
         for (final Piece piece : board.getAllPieces()) {
-        if (piece.getPieceAlliance().equals(alliance)) {
-        count++;
-        }
+            if (piece.getPieceAlliance().equals(alliance)) {
+                count++;
+            }
         }
         return count;
     }
