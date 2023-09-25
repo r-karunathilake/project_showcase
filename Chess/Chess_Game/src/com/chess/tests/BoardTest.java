@@ -74,12 +74,12 @@ public class BoardTest {
         final Builder builder = new Builder();
         
         // Create white chess piece layout 
-        builder.setPiece(new King(59, Alliance.WHITE, false));
+        builder.setPiece(new King(59, Alliance.WHITE, false, false));
         builder.setPiece(new Pawn(51, Alliance.WHITE, true));
         builder.nextPlayer(Alliance.WHITE); 
 
         // Create black chess piece layout 
-        builder.setPiece(new King(3, Alliance.BLACK, false));
+        builder.setPiece(new King(3, Alliance.BLACK, false, false));
         builder.setPiece(new Pawn(11, Alliance.BLACK, true));
         
         final Board testBoard = builder.build(); 
@@ -152,7 +152,7 @@ public class BoardTest {
     }
 
     @Test
-    public void testAlgebreicNotation() {
+    public void testAlgebraicNotation() {
         // Eighth rank check 
         assertEquals(BoardUtils.getPositionAtCoordinate(0), "a8");
         assertEquals(BoardUtils.getPositionAtCoordinate(1), "b8");

@@ -96,6 +96,7 @@ abstract public class Move {
         // Actually move the 'movedPiece' to a new destination coordinate 
         // by creating a new Piece at the destination coordinate
         builder.setPiece(this.movedPiece.newPiece(this));
+        
         // It's the next players turn 
         builder.nextPlayer(this.board.currentPlayer().getOpponent().getAlliance());
         

@@ -31,8 +31,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add white queen
         builder.setPiece(new Queen(BoardUtils.getCoordinateAtPosition("e4"), Alliance.WHITE, true));
@@ -105,8 +105,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add black queen
         builder.setPiece(new Queen(BoardUtils.getCoordinateAtPosition("e5"), Alliance.BLACK, true));
@@ -179,8 +179,8 @@ public class PieceTest {
         final Builder builder = new Builder(); 
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add white knight
         builder.setPiece(new Knight(BoardUtils.getCoordinateAtPosition("e4"), Alliance.WHITE, true));
@@ -253,8 +253,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add knights on the first rank
         builder.setPiece(new Knight(BoardUtils.getCoordinateAtPosition("a1"), Alliance.WHITE, true));
@@ -312,8 +312,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add knights on the first rank
         builder.setPiece(new Knight(BoardUtils.getCoordinateAtPosition("b1"), Alliance.WHITE, true));
@@ -373,8 +373,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add white bishop
         builder.setPiece(new Bishop(BoardUtils.getCoordinateAtPosition("d5"), Alliance.WHITE, true));
@@ -425,8 +425,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add white bishop
         builder.setPiece(new Bishop(BoardUtils.getCoordinateAtPosition("a1"), Alliance.WHITE, true));
@@ -471,8 +471,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
         // Add white rook
         builder.setPiece(new Rook(BoardUtils.getCoordinateAtPosition("e4"), Alliance.WHITE, true));
@@ -525,8 +525,8 @@ public class PieceTest {
         // Need to add King for both sides to create a valid board 
         // King here are not in their normal position, because they will be in check after promotion. Thus,
         // can't test the other player promotion. 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e2"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e7"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e2"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e7"), Alliance.BLACK, true, false));
 
         // Add white and black pawn
         builder.setPiece(new Pawn(BoardUtils.getCoordinateAtPosition("h7"), Alliance.WHITE, false));
@@ -570,8 +570,8 @@ public class PieceTest {
         final Builder builder = new Builder();
 
         // Need to add King for both sides to create a valid board 
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true));
-        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e1"), Alliance.WHITE, true, false));
+        builder.setPiece(new King(BoardUtils.getCoordinateAtPosition("e8"), Alliance.BLACK, true, false));
 
          // Add white and black pawn
         builder.setPiece(new Pawn(BoardUtils.getCoordinateAtPosition("d7"), Alliance.BLACK, true));
@@ -611,7 +611,6 @@ public class PieceTest {
             final MoveTransition transition = newBoard.currentPlayer().makeMove(newMove);
             assertTrue(transition.getMoveStatus().isDone());
             newBoard = transition.getTransitionBoard(); 
-            System.out.println("Success!");
         }
     }
 }

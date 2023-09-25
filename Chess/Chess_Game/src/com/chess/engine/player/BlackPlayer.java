@@ -38,8 +38,8 @@ public class BlackPlayer extends Player{
         return this.board.whitePlayer(); 
     }
 
-     @Override
-    protected Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals) {
+    @Override
+    public Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals) {
         final List<Move> kingCastles = new ArrayList<>();
 
         // Initial King castling check 

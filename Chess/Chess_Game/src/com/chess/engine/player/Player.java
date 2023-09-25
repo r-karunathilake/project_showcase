@@ -11,6 +11,8 @@ import com.chess.engine.board.move.Move;
 import com.chess.engine.pieces.King;
 import com.chess.engine.pieces.Piece;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.ImmutableList.Builder;
 
 abstract public class Player {
     protected final Board board;
@@ -21,10 +23,15 @@ abstract public class Player {
     Player(final Board board,
            final Collection<Move> legalMoves,
            final Collection<Move> opponentMoves){
-        
+
         this.board = board;
         this.playerKing = findKing();
-        this.legalMoves = legalMoves; 
+
+        Builder<Move> builder = ImmutableList.builder();
+        builder.addAll(legalMoves);
+        builder.addAll(this.calculateKingCastles(legalMoves, opponentMoves)); // Add the castling moves
+        this.legalMoves = builder.build(); 
+
         // False, if there are no attacks currently on the chess tile containing the King piece
         this.isInCheck = !Player.calculateAttacksOnTile(this.playerKing.getPiecePosition(), opponentMoves).isEmpty();
     }
@@ -54,6 +61,9 @@ abstract public class Player {
     }
 
     public boolean isInCheck(){
+        return this.isInCheck; 
+    }
+    public boolean isInCheckMate(){
         return this.isInCheck && !hasEscapeMoves(); 
     }
 
@@ -77,12 +87,8 @@ abstract public class Player {
         return false;
     }
 
-    public boolean isInCheckMate(){
-        return false;
-    }
-
     public boolean isCastled(){
-        return false;
+        return this.playerKing.isCastled();
     }
 
     public MoveTransition makeMove(final Move move){
@@ -117,5 +123,5 @@ abstract public class Player {
     abstract public Alliance getAlliance();
     abstract public Player getOpponent();
     
-    abstract protected Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals);
+    public abstract Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals);
 }
