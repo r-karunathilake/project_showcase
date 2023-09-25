@@ -1,0 +1,2 @@
+This work is licensed under a GNU Lesser General Public License v3.0.
+You can view the full license here: https://www.gnu.org/licenses/lgpl-3.0.en.html

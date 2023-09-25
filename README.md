@@ -3,6 +3,8 @@
 This repository was created to hold my personal project files. Each project is separated into directories and a short description of each project is given below. [^1]
 
 ### Python Projects
+---
+
 1. **EM_Field_Visualization**: this directory contains Python code for visualizing simulated electromagnetic field data for nanostructures. The code uses the following key Python packages for visualization: `numpy`, `scipy`, `matplotlib`, `pandas`.
    
 <p align="center">
@@ -16,5 +18,18 @@ This repository was created to hold my personal project files. Each project is s
 </p>
 
 3. **Invoice_Generator**: this directory contains the source code and .exe installer for a desktop application designed to create professional looking PDF invoice documents with ease. During the implementation of this project, I learned nuances of currency calculations as it relates to arithmetic precision, building plaform native application GUIs ([PyQt6](https://pypi.org/project/PyQt6/)) with proper tab orders, and buddies. The code uses the following Python packages: `PyQt6`, and `fpdf2`. 
-   
+
+<p align="center">
+      <img src="./Invoice_Generator/readme_assets/Test_Invoice_GUI.jpg" width="500" height="400">
+</p>
+
+### Java Projects
+---
+
+1. **Chess Engine**: this directory contains the source code and libraries for a standard chess engine made in Java. I created this project to practice my Java object-oriented programming and application development skills. The source code, as provided, has been tested to function on the Windows 10 operating system. The user is provided a full GUI for playing the game. This GUI was created with the [Java Swing](https://docs.oracle.com/javase/tutorial/uiswing/) toolkit. You may use, modify, and distribute this code according to the license provided within. The source code also contains a number of unit tests created with [Java JUnit 4](https://junit.org/junit4/) testing framework for verifying proper functionality of various systems within this chess engine. It is highly recommended to use and extend these tests in your own project. 
+
+<p align="center">
+      <img src="./Chess_Game/readme_assets/Java_Chess_Engine_Demo.gif" width="600" height="400">
+</p>
+
 [^1]: More details for some projects can be found in the README.md files under their respective directory. 
