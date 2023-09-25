@@ -29,10 +29,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
 import com.chess.engine.BoardDirection;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
@@ -47,7 +44,7 @@ import com.google.common.collect.ImmutableList.Builder;
 public class Table {
     private final JFrame gameFrame;
     private final GameHistoryPanel historyPanel;
-    private final CapturedPiecesPanel capturePanel;
+    private CapturedPiecesPanel capturePanel;
     private final MoveLog moveLog;
 
 
@@ -72,10 +69,6 @@ public class Table {
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(FRAME_DIM);
 
-        // Create the game history and capture panels 
-        this.historyPanel = new GameHistoryPanel();
-        this.capturePanel = new CapturedPiecesPanel(); 
-
         // Load the image from a file 
         setCustomWindowIcon(); 
 
@@ -85,6 +78,10 @@ public class Table {
         this.showLegalMoves = false; // Highlight moves false
         this.boardPanel = new BoardPanel(); // Create board panel
         this.moveLog = new MoveLog();
+
+        // Create the game history and capture panels 
+        this.historyPanel = new GameHistoryPanel();
+        this.capturePanel = new CapturedPiecesPanel(this.boardDirection); 
 
         // Create main window
         this.gameFrame.setJMenuBar(createTableMenuBar());
@@ -131,6 +128,7 @@ public class Table {
             public void actionPerformed(final ActionEvent e){
                 boardDirection = boardDirection.opposite();
                 boardPanel.drawBoard(chessBoard);
+                updateCapturePanel(boardDirection); 
             }
         });
         
@@ -146,6 +144,13 @@ public class Table {
         });
         prefMenu.add(legalMoveHighlight);
         return prefMenu;
+    }
+
+    private void updateCapturePanel(BoardDirection boardDirection) {
+        this.capturePanel.setBoardDirection(boardDirection);
+        this.capturePanel.redo(moveLog);
+        this.gameFrame.validate();
+        this.gameFrame.repaint();
     }
 
     private JMenu createFileMenu() {
@@ -243,7 +248,6 @@ public class Table {
             return this.moves.remove(index);
         }
     }
-
 
     public class TilePanel extends JPanel{
         private final int tileId;
@@ -428,14 +432,6 @@ public class Table {
             else{
                  // Set the border for the JPanel
                 this.setBorder(new EmptyBorder(0, 0, 0, 0)); 
-            }
-        }
-
-        private void clearhighlightLegalMoves(){
-            if(showLegalMoves && !isSelected){
-               for(JLabel label : moveHighlightIcons){
-                    this.remove(label);
-               }
             }
         }
 

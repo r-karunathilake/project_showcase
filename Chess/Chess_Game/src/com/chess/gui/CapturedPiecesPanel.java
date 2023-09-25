@@ -1,10 +1,5 @@
 package com.chess.gui;
 
-import com.chess.engine.board.BoardUtils;
-import com.chess.engine.board.move.Move;
-import com.chess.engine.pieces.Piece;
-import com.chess.gui.Table.MoveLog;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,16 +18,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import com.chess.engine.BoardDirection;
+import com.chess.engine.board.BoardUtils;
+import com.chess.engine.board.move.Move;
+import com.chess.engine.pieces.Piece;
+import com.chess.gui.Table.MoveLog;
 import com.google.common.primitives.Ints;
 
 public class CapturedPiecesPanel extends JPanel{
     private final JPanel northPanel;
     private final JPanel southPanel;
+    private BoardDirection boardDirection;
 
     private static final EtchedBorder PANEL_BORDER = new EtchedBorder(EtchedBorder.RAISED);
     private static final Dimension PIECE_DIMS = new Dimension(75, 80);
 
-    public CapturedPiecesPanel(){
+    public CapturedPiecesPanel(BoardDirection orientation){
         super(new BorderLayout());
         setBackground(Color.decode("0xe8daef"));
         setBorder(PANEL_BORDER);
@@ -42,7 +43,12 @@ public class CapturedPiecesPanel extends JPanel{
         this.southPanel.setBackground(Color.decode("0x48c9b0"));
         this.add(this.northPanel, BorderLayout.NORTH);
         this.add(this.southPanel, BorderLayout.SOUTH);
+        this.boardDirection = orientation;
         setPreferredSize(PIECE_DIMS);
+    }
+
+    public void setBoardDirection(BoardDirection newDirection){
+        this.boardDirection = newDirection; 
     }
 
     public void redo (final MoveLog moveLog){
@@ -82,7 +88,7 @@ public class CapturedPiecesPanel extends JPanel{
         });
 
         // Draw the taken pieces
-        for(final Piece capturedPiece : whiteCapturedPieces){
+        for(final Piece capturedPiece : this.boardDirection.getNorthPanelPieces(whiteCapturedPieces, blackCapturedPieces)){
             try {
                 // File name e.g. WB.gif (White Bishop) or BN.gif (Black Knight)
                 final BufferedImage image = ImageIO.read(new File(BoardUtils.ICON_LIBRARY_PATH.resolve(capturedPiece
@@ -97,7 +103,7 @@ public class CapturedPiecesPanel extends JPanel{
             }
         }
 
-        for(final Piece capturedPiece : blackCapturedPieces){
+        for(final Piece capturedPiece : this.boardDirection.getSouthPanelPieces(whiteCapturedPieces, blackCapturedPieces)){
             try {
                 // File name e.g. WB.gif (White Bishop) or BN.gif (Black Knight)
                 final BufferedImage image = ImageIO.read(new File(BoardUtils.ICON_LIBRARY_PATH.resolve(capturedPiece
