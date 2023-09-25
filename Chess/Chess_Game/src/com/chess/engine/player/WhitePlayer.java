@@ -38,7 +38,7 @@ public class WhitePlayer extends Player{
     }
 
     @Override
-    public Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals) {
+    public Collection<Move> calculateKingCastles(Collection<Move> opponentLegals) {
         final List<Move> kingCastles = new ArrayList<>();
 
         // Initial King castling check 

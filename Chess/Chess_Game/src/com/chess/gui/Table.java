@@ -37,6 +37,8 @@ import com.chess.engine.board.move.Move;
 import com.chess.engine.board.move.MoveFactory;
 import com.chess.engine.pieces.Piece;
 import com.chess.engine.player.MoveTransition;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 public class Table {
     private final JFrame gameFrame;
@@ -342,6 +344,13 @@ public class Table {
         private Collection<Move> pieceLegalMoves(final Board board) {
             if(humanMovedPiece != null && 
             humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()){
+                // Handle king castling moves 
+                if(humanMovedPiece == board.currentPlayer().getPlayerKing()){
+                    Builder<Move> builder = ImmutableList.builder();
+                    builder.addAll(humanMovedPiece.calculateLegalMoves(board));
+                    builder.addAll(board.currentPlayer().calculateKingCastles(board.currentPlayer().getOpponent().getLegalMoves()));
+                    return ImmutableList.copyOf(builder.build()); 
+                }
                 return humanMovedPiece.calculateLegalMoves(board);
             }
             return Collections.emptyList(); 

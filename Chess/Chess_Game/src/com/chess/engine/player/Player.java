@@ -11,7 +11,6 @@ import com.chess.engine.board.move.Move;
 import com.chess.engine.pieces.King;
 import com.chess.engine.pieces.Piece;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ImmutableList.Builder;
 
 abstract public class Player {
@@ -29,7 +28,7 @@ abstract public class Player {
 
         Builder<Move> builder = ImmutableList.builder();
         builder.addAll(legalMoves);
-        builder.addAll(this.calculateKingCastles(legalMoves, opponentMoves)); // Add the castling moves
+        builder.addAll(this.calculateKingCastles(opponentMoves)); // Add the castling moves
         this.legalMoves = builder.build(); 
 
         // False, if there are no attacks currently on the chess tile containing the King piece
@@ -115,7 +114,7 @@ abstract public class Player {
         return this.legalMoves;
     }
 
-    private Piece getPlayerKing() {
+    public Piece getPlayerKing() {
         return this.playerKing;
     }
 
@@ -123,5 +122,5 @@ abstract public class Player {
     abstract public Alliance getAlliance();
     abstract public Player getOpponent();
     
-    public abstract Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals);
+    public abstract Collection<Move> calculateKingCastles(Collection<Move> opponentLegals);
 }
