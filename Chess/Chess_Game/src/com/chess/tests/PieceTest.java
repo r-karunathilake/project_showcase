@@ -391,25 +391,25 @@ public class PieceTest {
         assertEquals(blackLegalMoves.size(), 5);
 
         // Create a hashmap of all possible moves for the bishop
-        Map<String, String> whiteBishopLegalMoves = new HashMap<>(); 
+        Map<String, String> legalMoves = new HashMap<>(); 
 
         // Add moves (source coordinate: destination coordinate) to HashMap
         //---------------------------------------------------------------
-        whiteBishopLegalMoves.put("d5", "c6");
-        whiteBishopLegalMoves.put("d5", "b1");
-        whiteBishopLegalMoves.put("d5", "a8");
-        whiteBishopLegalMoves.put("d5", "e6");
-        whiteBishopLegalMoves.put("d5", "f7");
-        whiteBishopLegalMoves.put("d5", "g8");
-        whiteBishopLegalMoves.put("d5", "c4");
-        whiteBishopLegalMoves.put("d5", "b3");
-        whiteBishopLegalMoves.put("d5", "a2");
-        whiteBishopLegalMoves.put("d5", "e4");
-        whiteBishopLegalMoves.put("d5", "f3");
-        whiteBishopLegalMoves.put("d5", "g2");
-        whiteBishopLegalMoves.put("d5", "h1");
+        legalMoves.put("d5", "c6");
+        legalMoves.put("d5", "b1");
+        legalMoves.put("d5", "a8");
+        legalMoves.put("d5", "e6");
+        legalMoves.put("d5", "f7");
+        legalMoves.put("d5", "g8");
+        legalMoves.put("d5", "c4");
+        legalMoves.put("d5", "b3");
+        legalMoves.put("d5", "a2");
+        legalMoves.put("d5", "e4");
+        legalMoves.put("d5", "f3");
+        legalMoves.put("d5", "g2");
+        legalMoves.put("d5", "h1");
 
-        for(Map.Entry<String, String> move : whiteBishopLegalMoves.entrySet()){
+        for(Map.Entry<String, String> move : legalMoves.entrySet()){
             String sourceCord = move.getKey();
             String destCord = move.getValue();
 
@@ -443,19 +443,19 @@ public class PieceTest {
         assertEquals(blackLegalMoves.size(), 5);
 
         // Create a hashmap of all possible moves for the bishop
-        Map<String, String> whiteBishopLegalMoves = new HashMap<>(); 
+        Map<String, String> legalMoves = new HashMap<>(); 
 
         // Add moves (source coordinate: destination coordinate) to HashMap
         //---------------------------------------------------------------
-        whiteBishopLegalMoves.put("a1", "b2");
-        whiteBishopLegalMoves.put("a1", "c3");
-        whiteBishopLegalMoves.put("a1", "d4");
-        whiteBishopLegalMoves.put("a1", "e5");
-        whiteBishopLegalMoves.put("a1", "f6");
-        whiteBishopLegalMoves.put("a1", "g7");
-        whiteBishopLegalMoves.put("a1", "h8");
+        legalMoves.put("a1", "b2");
+        legalMoves.put("a1", "c3");
+        legalMoves.put("a1", "d4");
+        legalMoves.put("a1", "e5");
+        legalMoves.put("a1", "f6");
+        legalMoves.put("a1", "g7");
+        legalMoves.put("a1", "h8");
 
-        for(Map.Entry<String, String> move : whiteBishopLegalMoves.entrySet()){
+        for(Map.Entry<String, String> move : legalMoves.entrySet()){
             String sourceCord = move.getKey();
             String destCord = move.getValue();
 
@@ -489,25 +489,25 @@ public class PieceTest {
         assertEquals(blackLegalMoves.size(), 5);
     
         // Create a hashmap of all possible moves for the rook
-        Map<String, String> whiteBishopLegalMoves = new HashMap<>(); 
+        Map<String, String> legalMoves = new HashMap<>(); 
 
         // Add moves (source coordinate: destination coordinate) to HashMap
         //---------------------------------------------------------------
-        whiteBishopLegalMoves.put("e4", "e8");
-        whiteBishopLegalMoves.put("e4", "e7");
-        whiteBishopLegalMoves.put("e4", "e6");
-        whiteBishopLegalMoves.put("e4", "e5");
-        whiteBishopLegalMoves.put("e4", "e3");
-        whiteBishopLegalMoves.put("e4", "e2");
-        whiteBishopLegalMoves.put("e4", "a4");
-        whiteBishopLegalMoves.put("e4", "b4");
-        whiteBishopLegalMoves.put("e4", "c4");
-        whiteBishopLegalMoves.put("e4", "d4");
-        whiteBishopLegalMoves.put("e4", "f4");
-        whiteBishopLegalMoves.put("e4", "g4");
-        whiteBishopLegalMoves.put("e4", "h4");
+        legalMoves.put("e4", "e8");
+        legalMoves.put("e4", "e7");
+        legalMoves.put("e4", "e6");
+        legalMoves.put("e4", "e5");
+        legalMoves.put("e4", "e3");
+        legalMoves.put("e4", "e2");
+        legalMoves.put("e4", "a4");
+        legalMoves.put("e4", "b4");
+        legalMoves.put("e4", "c4");
+        legalMoves.put("e4", "d4");
+        legalMoves.put("e4", "f4");
+        legalMoves.put("e4", "g4");
+        legalMoves.put("e4", "h4");
 
-        for(Map.Entry<String, String> move : whiteBishopLegalMoves.entrySet()){
+        for(Map.Entry<String, String> move : legalMoves.entrySet()){
             String sourceCord = move.getKey();
             String destCord = move.getValue();
 
@@ -589,18 +589,18 @@ public class PieceTest {
         assertEquals(blackLegalMoves.size(), 2 + 4);
 
          // Create a hashmap of all possible moves for the white knight
-        Map<String, String> whiteBishopLegalMoves = new LinkedHashMap<>(); 
+        Map<String, String> legalMoves = new LinkedHashMap<>(); 
 
         // Add moves (source coordinate: destination coordinate) to HashMap
         //---------------------------------------------------------------
-        whiteBishopLegalMoves.put("e2", "e4");
-        whiteBishopLegalMoves.put("e8", "d8");
-        whiteBishopLegalMoves.put("e4", "e5");
-        whiteBishopLegalMoves.put("d7", "d5");
-        whiteBishopLegalMoves.put("e5", "d6");
+        legalMoves.put("e2", "e4");
+        legalMoves.put("e8", "d8");
+        legalMoves.put("e4", "e5");
+        legalMoves.put("d7", "d5");
+        legalMoves.put("e5", "d6");
 
         Board newBoard = testBoard; 
-        for(Map.Entry<String, String> move : whiteBishopLegalMoves.entrySet()){
+        for(Map.Entry<String, String> move : legalMoves.entrySet()){
             String sourceCord = move.getKey();
             String destCord = move.getValue();
 
@@ -609,7 +609,8 @@ public class PieceTest {
                                                         BoardUtils.getCoordinateAtPosition(destCord));
 
             final MoveTransition transition = newBoard.currentPlayer().makeMove(newMove);
-            assertTrue(transition.getMoveStatus().isDone());
+            assertTrue("Move from " + sourceCord + " to " + destCord + " NOT found in legal moves!", 
+                       transition.getMoveStatus().isDone());
             newBoard = transition.getTransitionBoard(); 
         }
     }
