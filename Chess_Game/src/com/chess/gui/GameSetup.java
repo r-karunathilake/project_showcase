@@ -34,7 +34,6 @@ public class GameSetup extends JDialog{
 
         // Setup the dialog box layout 
         final JPanel setupPanel = new JPanel(new GridLayout(4, 3));
-        // TODO: Add icons to the radio buttons 
 
         // White radio buttons 
         final JRadioButton whiteHumanBtn = new JRadioButton(PLAYER_TEXT);
@@ -68,12 +67,15 @@ public class GameSetup extends JDialog{
         setupPanel.add(blackComputerBtn);
         
         setupPanel.add(new JLabel("Searching Depth for AI: "));
-        this.aiDepthSpinner = new JSpinner(new SpinnerNumberModel(6, 0, 
-                                                                  Integer.MAX_VALUE, 1)); 
-        setupPanel.add(this.aiDepthSpinner);
+        this.aiDepthSpinner = new JSpinner(new SpinnerNumberModel(3, 0, 
+                                                                  5, 1)); 
         
-        JButton cancelBtn = new JButton("Cancel");
+        setupPanel.add(this.aiDepthSpinner);
+        setupPanel.add(new JLabel(""));
+
+        setupPanel.add(new JLabel(""));
         JButton okBtn = new JButton("Ok");
+        JButton cancelBtn = new JButton("Cancel");
 
         // Action listener for the OK button 
         okBtn.addActionListener(new ActionListener() {
@@ -101,7 +103,6 @@ public class GameSetup extends JDialog{
 
         pack();
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setVisible(true);
     }
 
     public void promptUser(){
@@ -122,6 +123,9 @@ public class GameSetup extends JDialog{
 
     private PlayerType getBlackType() {
         return this.blackPlayerType;
+    }
+    public int getAIDepth(){
+        return (Integer) this.aiDepthSpinner.getValue();
     }
 }
 

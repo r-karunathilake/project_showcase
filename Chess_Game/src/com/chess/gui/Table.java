@@ -182,7 +182,7 @@ public class Table extends Observable{
 
         @Override
         protected Move doInBackground() throws Exception {
-            final MoveStrategy miniMax = new MiniMax(4);
+            final MoveStrategy miniMax = new MiniMax(Table.get().gameSetup.getAIDepth());
             final Move bestMove = miniMax.execute(Table.get().chessBoard);
             return bestMove;
         }

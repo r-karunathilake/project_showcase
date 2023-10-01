@@ -21,8 +21,6 @@ public class MiniMax implements MoveStrategy{
 
     @Override
     public Move execute(final Board board) {
-        final long startTime = System.currentTimeMillis(); // current time in ms
-
         Move bestMove = null;
         int bestWhiteOutcome = Integer.MIN_VALUE;
         int bestBlackOutcome = Integer.MAX_VALUE; 
@@ -57,8 +55,6 @@ public class MiniMax implements MoveStrategy{
                 }
             }
         }
-
-        final long executionTime = System.currentTimeMillis() - startTime; 
 
         return bestMove; 
     }
