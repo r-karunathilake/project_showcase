@@ -33,6 +33,11 @@ public class WhitePlayer extends Player{
     }
 
     @Override
+    public String toString(){
+        return this.getAlliance().toString();
+    }
+
+    @Override
     public Player getOpponent() {
         return this.board.blackPlayer(); 
     }

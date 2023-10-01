@@ -22,7 +22,7 @@ import com.chess.engine.player.MoveTransition;
 import com.chess.engine.player.ai.MiniMax;
 import com.chess.engine.player.ai.MoveStrategy;
 
-public class TestCheckMate {
+public class CheckMateTest {
 
     @Test
     public void testFoolsMate(){

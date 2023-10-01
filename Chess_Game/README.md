@@ -30,7 +30,7 @@ This chess engine implements all the standard rules of a chess game. With the ba
 In the top menu bar of the GUI, the `Preferences` option allows the user to flip the orientation of the board and a toggle to highlight the current legal moves on the chess board for the selected piece.
 The `File` section of the menu bar contains the `Load PGN File` and `Exit` options. However, only `Exit` option is implemented at this time.
 
-The `Setup Game` options in the `Options` menu allows the player to configure the player types (`HUMAN` or `COMPUTER`) for both white and black. Additionally, the AI difficulty can be adjusted by increasing the search depth (up to 5). Note however, large depth levels require more time for move calculations. `Reset Game` option, as the name suggests, will reset the chess board to the initial state for new game.
+The `Setup Game` options in the `Options` menu allows the player to configure the player types (`HUMAN` or `COMPUTER`) for both white and black. Additionally, the AI difficulty can be adjusted by increasing the search depth (up to 5). Note however, large depth levels require more time for move calculations. `Reset Game` option, as the name suggests, will reset the chess board to the initial state for a new game.
 
 **Note: the user may cancel any selection by right-clicking on the mouse.**
 

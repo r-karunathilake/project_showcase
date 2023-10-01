@@ -39,6 +39,11 @@ public class BlackPlayer extends Player{
     }
 
     @Override
+    public String toString(){
+        return this.getAlliance().toString();
+    }
+
+    @Override
     public Collection<Move> calculateKingCastles(Collection<Move> opponentLegals) {
         final List<Move> kingCastles = new ArrayList<>();
 
