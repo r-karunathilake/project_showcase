@@ -1,5 +1,6 @@
 package com.chess.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedHashMap;
@@ -18,6 +19,8 @@ import com.chess.engine.pieces.Knight;
 import com.chess.engine.pieces.Pawn;
 import com.chess.engine.pieces.Rook;
 import com.chess.engine.player.MoveTransition;
+import com.chess.engine.player.ai.MiniMax;
+import com.chess.engine.player.ai.MoveStrategy;
 
 public class TestCheckMate {
 
@@ -50,6 +53,44 @@ public class TestCheckMate {
             newBoard = transition.getTransitionBoard(); 
         }
         assertTrue(newBoard.currentPlayer().isInCheckMate());
+    }
+
+    @Test
+    public void testFoolsMateAI(){  
+        final Board testBoard = Board.createInitialBoard();
+
+        // Create a hashmap of all possible moves
+        Map<String, String> legalMoves = new LinkedHashMap<>(); 
+
+        // Add moves (source coordinate: destination coordinate) to HashMap
+        //---------------------------------------------------------------
+        legalMoves.put("f2", "f4");
+        legalMoves.put("e7", "e5");
+        legalMoves.put("g2", "g4");
+
+        Board newBoard = testBoard; 
+        for(Map.Entry<String, String> move : legalMoves.entrySet()){
+            String sourceCord = move.getKey();
+            String destCord = move.getValue();
+
+            final Move newMove = MoveFactory.createMove(newBoard, 
+                                                        BoardUtils.getCoordinateAtPosition(sourceCord), 
+                                                        BoardUtils.getCoordinateAtPosition(destCord));
+
+            final MoveTransition transition = newBoard.currentPlayer().makeMove(newMove);
+            assertTrue("Move from " + sourceCord + " to " + destCord + " NOT found in legal moves!", 
+                       transition.getMoveStatus().isDone());
+            newBoard = transition.getTransitionBoard(); 
+        }
+
+        // Ask AI to calculate the next best move 
+        final MoveStrategy ai_strat = new MiniMax(4);
+        final Move moveAI = ai_strat.execute(newBoard);
+
+        final Move finalMove = MoveFactory.createMove(newBoard, 
+                                                      BoardUtils.getCoordinateAtPosition("d8"), 
+                                                      BoardUtils.getCoordinateAtPosition("h4"));
+        assertEquals(moveAI, finalMove);
     }
 
     @Test
