@@ -144,6 +144,22 @@ public class Table extends Observable{
         });
 
         optionsMenu.add(setupItem);
+
+        // Create game reset 
+        final JMenuItem resetItem = new JMenuItem("Reset Game");
+        resetItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                Table.get().chessBoard = Board.createInitialBoard();
+                Table.get().boardPanel.drawBoard(Table.get().chessBoard);
+                Table.get().moveLog.clear();
+                Table.get().capturePanel.redo(Table.get().moveLog);
+                Table.get().historyPanel.redo(Table.get().chessBoard, 
+                                              Table.get().moveLog);
+            }
+        });
+        optionsMenu.add(resetItem);
+
         return optionsMenu;
     }
 

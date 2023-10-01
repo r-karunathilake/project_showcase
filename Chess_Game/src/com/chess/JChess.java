@@ -5,8 +5,7 @@ import com.chess.gui.Table;
 
 public class JChess {
     public static void main(String[] args){
-        Board board = Board.createInitialBoard(); 
-        System.out.println(board);
+        Board.createInitialBoard(); 
         Table.get().show(); 
     }
 }
