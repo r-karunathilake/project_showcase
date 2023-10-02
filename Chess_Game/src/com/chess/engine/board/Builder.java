@@ -12,7 +12,7 @@ import com.chess.engine.pieces.Piece;
 public class Builder {
     private Map<Integer, Piece> boardConfig;
     Alliance nextPlayer;
-    Pawn enPassantPawn; 
+    Pawn enPassantPawn = null; 
     Move transitionMove; 
     
     // Builder constructor

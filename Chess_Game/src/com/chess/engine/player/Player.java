@@ -118,6 +118,14 @@ abstract public class Player {
         return this.playerKing;
     }
 
+    public boolean isKingSideCastleAllowed() {
+        return this.playerKing.isKingSideCastleAllowed();
+    }
+
+    public boolean isQueenSideCastleAllowed() {
+        return this.playerKing.isQueenSideCastleAllowed();
+    }
+
     abstract public Collection<Piece> getActivePieces();
     abstract public Alliance getAlliance();
     abstract public Player getOpponent();

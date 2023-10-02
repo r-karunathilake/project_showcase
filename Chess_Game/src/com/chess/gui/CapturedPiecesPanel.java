@@ -31,7 +31,7 @@ public class CapturedPiecesPanel extends JPanel{
     private BoardDirection boardDirection;
 
     private static final EtchedBorder PANEL_BORDER = new EtchedBorder(EtchedBorder.RAISED);
-    private static final Dimension PIECE_DIMS = new Dimension(75, 80);
+    private static final Dimension PIECE_DIMS = new Dimension(100, 100);
 
     public CapturedPiecesPanel(BoardDirection orientation){
         super(new BorderLayout());
