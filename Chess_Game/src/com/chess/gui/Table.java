@@ -72,6 +72,10 @@ public class Table extends Observable{
     private int selectedTileId; 
     private Move computerMove;
 
+    public void setComputerMove(Move computerMove) {
+        this.computerMove = computerMove;
+    }
+
     // Singleton instance 
     private static final Table INSTANCE = new Table();
 
@@ -145,17 +149,18 @@ public class Table extends Observable{
 
         optionsMenu.add(setupItem);
 
-        // Create game reset 
-        final JMenuItem resetItem = new JMenuItem("Reset Game");
+        // Create new game
+        final JMenuItem resetItem = new JMenuItem("New Game");
         resetItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
+                Table.get().setComputerMove(null);
                 Table.get().chessBoard = Board.createInitialBoard();
-                Table.get().boardPanel.drawBoard(Table.get().chessBoard);
                 Table.get().moveLog.clear();
                 Table.get().capturePanel.redo(Table.get().moveLog);
                 Table.get().historyPanel.redo(Table.get().chessBoard, 
-                                              Table.get().moveLog);
+                                              Table.get().moveLog); 
+                Table.get().boardPanel.drawBoard(Table.get().chessBoard);     
             }
         });
         optionsMenu.add(resetItem);
