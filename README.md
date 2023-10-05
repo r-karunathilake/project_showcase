@@ -10,7 +10,7 @@ This repository was created to hold my personal project files. Each project is s
 
 <p align="center">
       <img src="./Data_Visualization/ED_and_MD_Resonance/ED_and_MD_Field.svg" width="400" height="200">
-      <img src="./Data_Visualization/Plasma_Parameter_Plot/Plasma_Types_Plot.svg" width="400" height="200">
+      <img src="./Data_Visualization/Plasma_Parameter_Plot/Plasma_Types_Plot_J.jpg" width="400" height="200">
 </p>
 
 2. **Optical_Component_Designer**:  this directory contains code for automatic optimization (using a customized third party [particle swarm optimizer](https://pyswarms.readthedocs.io/en/latest/)) with real-time simulation of novel optical components known as metasurfaces. The directory also contains code for proper logging of errors for easy debugging, and [ANSYS Lumerical API](https://optics.ansys.com/hc/en-us/articles/360037824513-Python-API-overview) (`lumapi`) interaction code for proper RCWA simulation setup and data extraction. The code uses the following key Python packages: `matplotlib`, `pyswarms`, `scipy`, `numpy`.
